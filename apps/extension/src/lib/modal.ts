@@ -30,7 +30,7 @@ interface PasteReviewModalOptions {
   inputText: string;
   detection: DetectionResult;
   settings: AiMaeCheckSettings;
-  mode?: "default" | "paste_guard";
+  mode?: "default" | "paste_guard" | "context_check";
 }
 
 const riskLabel: Record<RiskLevel, string> = {
@@ -362,6 +362,7 @@ function formatLlmStatusMessage(message: string, detail?: LlmErrorDetail): strin
 export async function showPasteReviewModal(options: PasteReviewModalOptions): Promise<ModalDecision> {
   return new Promise((resolve) => {
     const isPasteGuard = options.mode === "paste_guard";
+    const isContextCheck = options.mode === "context_check";
     const host = document.createElement("div");
     const shadow = host.attachShadow({ mode: "open" });
     const style = document.createElement("style");
@@ -371,13 +372,21 @@ export async function showPasteReviewModal(options: PasteReviewModalOptions): Pr
     const overlay = createElement("div", "hm-overlay");
     const dialog = createElement("section", "hm-dialog");
     const header = createElement("header", "hm-header");
-    header.append(createElement("h2", "hm-title", isPasteGuard ? "安全化してから貼り付けますか？" : "このまま貼り付けますか？"));
+    header.append(
+      createElement(
+        "h2",
+        "hm-title",
+        isPasteGuard ? "安全化してから貼り付けますか？" : isContextCheck ? "AI文脈チェックを実行しますか？" : "このまま貼り付けますか？"
+      )
+    );
     header.append(
       createElement(
         "p",
         "hm-description",
         isPasteGuard
           ? "貼り付けようとしている文章に、秘密情報や高リスク情報の可能性があります。そのまま貼り付けず、安全化してから入力できます。"
+          : isContextCheck
+            ? "ルールベースの検出はありませんが、文脈によっては注意が必要な内容の可能性があります。必要に応じてブラウザ内でAI文脈チェックを実行できます。"
           : "貼り付けようとしている文章に、注意が必要な情報が含まれている可能性があります。"
       )
     );
@@ -420,6 +429,9 @@ export async function showPasteReviewModal(options: PasteReviewModalOptions): Pr
     const cancelButton = createElement("button", "hm-button", "キャンセル");
     if (isPasteGuard) {
       footer.append(maskButton, cancelButton);
+    } else if (isContextCheck) {
+      maskButton.textContent = "候補をマスクして入力";
+      footer.append(maskButton, llmButton, rawButton, cancelButton);
     } else {
       footer.append(maskButton, llmButton, rawButton, cancelButton);
     }
@@ -445,6 +457,9 @@ export async function showPasteReviewModal(options: PasteReviewModalOptions): Pr
       renderFindingList(list, options.detection.findings, selectedRuleFindingIds, render);
       preview.textContent = maskSensitiveText(options.inputText, findings).maskedText;
       renderCandidates(candidateList, llmCandidates, selectedCandidateIds, render);
+      if (isContextCheck) {
+        maskButton.toggleAttribute("disabled", findings.length === 0);
+      }
     };
 
     const cleanup = () => {
@@ -537,7 +552,7 @@ export async function showPasteReviewModal(options: PasteReviewModalOptions): Pr
 
     render();
 
-    if (!isPasteGuard && options.settings.llm.enabled && options.settings.llm.mode === "auto") {
+    if (!isPasteGuard && !isContextCheck && options.settings.llm.enabled && options.settings.llm.mode === "auto") {
       void runLlm();
     }
   });
