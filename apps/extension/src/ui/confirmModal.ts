@@ -25,10 +25,18 @@ export type ConfirmModalDecision =
       type: "cancel";
     };
 
+export interface MinimizeResult {
+  text?: string;
+  message?: string;
+  blocked?: boolean;
+  error?: string;
+}
+
 export interface SendConfirmModalOptions {
   inputText: string;
   detection: DetectionResult;
   defaultMode?: TransformMode;
+  onMinimize?: (onProgress: (message: string) => void) => Promise<MinimizeResult>;
 }
 
 export interface CategoryGroup {
@@ -173,7 +181,8 @@ export async function showSendConfirmModal(options: SendConfirmModalOptions): Pr
     const policy = evaluateDlpPolicy(options.detection.findings);
     const groups = createCategoryGroups(options.detection.findings, policy);
     const selectedFindingIds = new Set(options.detection.findings.map((finding) => finding.id));
-    let mode: TransformMode = options.defaultMode ?? "mask";
+    let mode: TransformMode = options.defaultMode === "minimize" && !options.onMinimize ? "mask" : options.defaultMode ?? "mask";
+    let minimizeInFlight = false;
 
     const host = document.createElement("div");
     const shadow = host.attachShadow({ mode: "open" });
@@ -212,7 +221,8 @@ export async function showSendConfirmModal(options: SendConfirmModalOptions): Pr
     transform.append(createElement("legend", undefined, "変換モード"));
     const previewTitle = createElement("h3", undefined, "送信される内容");
     const preview = createElement("pre", "amc-preview");
-    transformPanel.append(transform, previewTitle, preview);
+    const status = createElement("p", "amc-note");
+    transformPanel.append(transform, status, previewTitle, preview);
 
     const footer = createElement("footer", "amc-footer");
     const submitButton = createElement("button", "amc-button amc-primary");
@@ -235,7 +245,7 @@ export async function showSendConfirmModal(options: SendConfirmModalOptions): Pr
       preview.textContent = createConfirmedText(options.inputText, options.detection.findings, selectedFindingIds, mode);
       const currentSelected = selectedFindings(options.detection.findings, selectedFindingIds);
       submitButton.textContent = policy.canSendRaw && currentSelected.length === 0 ? "そのまま送信" : "安全化して送信";
-      submitButton.toggleAttribute("disabled", !canSubmitSelection(groups, selectedFindingIds));
+      submitButton.toggleAttribute("disabled", minimizeInFlight || !canSubmitSelection(groups, selectedFindingIds));
     };
 
     const renderCategories = () => {
@@ -321,14 +331,24 @@ export async function showSendConfirmModal(options: SendConfirmModalOptions): Pr
         radio.name = "amc-transform-mode";
         radio.value = option.value;
         radio.checked = mode === option.value;
+        radio.disabled = option.value === "minimize" && !options.onMinimize;
         radio.addEventListener("change", () => {
           mode = option.value;
+          status.textContent = "";
           renderPreview();
         });
 
         const copy = createElement("span");
         copy.append(createElement("strong", undefined, option.title));
-        copy.append(createElement("p", "amc-note", option.description));
+        copy.append(
+          createElement(
+            "p",
+            "amc-note",
+            option.value === "minimize" && !options.onMinimize
+              ? "AI文脈チェックが無効なため、現在は選択できません。"
+              : option.description
+          )
+        );
         label.append(radio, copy);
         transform.append(label);
       }
@@ -336,6 +356,37 @@ export async function showSendConfirmModal(options: SendConfirmModalOptions): Pr
 
     submitButton.addEventListener("click", () => {
       if (!canSubmitSelection(groups, selectedFindingIds)) {
+        return;
+      }
+
+      if (mode === "minimize" && options.onMinimize) {
+        minimizeInFlight = true;
+        status.textContent = "ローカルAIでMinimize候補を作成しています。";
+        renderPreview();
+
+        void options
+          .onMinimize((message) => {
+            status.textContent = message;
+          })
+          .then((result) => {
+            if (result.blocked || result.error || !result.text || result.text.trim().length === 0) {
+              status.textContent =
+                result.error ??
+                result.message ??
+                "Minimize結果を送信できませんでした。MaskまたはGeneralizeを選んでください。";
+              return;
+            }
+
+            cleanup();
+            resolve({
+              type: "submit",
+              text: result.text
+            });
+          })
+          .finally(() => {
+            minimizeInFlight = false;
+            renderPreview();
+          });
         return;
       }
 
