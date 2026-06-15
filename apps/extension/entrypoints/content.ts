@@ -2,6 +2,7 @@ import { defineContentScript } from "wxt/utils/define-content-script";
 import { detectSensitiveText, evaluateDlpPolicy, type DetectionResult } from "@ai-mae-check/core";
 import { createLlmContextAnalyzer, isWebGpuAvailable, WEBGPU_UNAVAILABLE_MESSAGE } from "@ai-mae-check/llm";
 import { adapterForHostname } from "../src/content/adapters";
+import { shouldOfferContextCheck } from "../src/content/dom/contextHints";
 import { installFileInterceptor } from "../src/content/dom/fileInterceptor";
 import { evaluatePasteGuard } from "../src/content/dom/pasteGuard";
 import { installSendInterceptor } from "../src/content/dom/sendInterceptor";
@@ -241,6 +242,24 @@ async function handlePaste(event: ClipboardEvent, settings: AiMaeCheckSettings):
   });
 
   if (guard.action === "allow") {
+    if (!settings.llm.enabled || !shouldOfferContextCheck(pastedText)) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    const savedRange = captureCurrentRange(target);
+    const decision = await showPasteReviewModal({
+      inputText: pastedText,
+      detection: guard.detection,
+      settings,
+      mode: "context_check"
+    });
+
+    if (decision.type === "insert") {
+      insertTextAtTarget(target, decision.text, savedRange);
+    }
+
     return;
   }
 
