@@ -1,4 +1,4 @@
-import type { Finding, RiskLevel } from "@harumae/core";
+import type { Finding, RiskLevel } from "@ai-mae-check/core";
 
 export interface LlmAnalyzerOptions {
   modelId?: string;

@@ -1,4 +1,4 @@
-import type { Finding } from "@harumae/core";
+import type { Finding } from "@ai-mae-check/core";
 import { DEFAULT_CONFIDENCE_THRESHOLD } from "./constants";
 import type { ContextRiskCandidate, ContextRiskCategory, ConvertCandidatesOptions } from "./types";
 

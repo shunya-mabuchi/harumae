@@ -1,8 +1,8 @@
-# 貼るまえ DLP Roadmap Implementation Plan
+# AIまえチェック DLP Roadmap Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 貼るまえを、paste前チェック中心の拡張から、ChatGPT / Claude / Gemini の通常入力体験を維持した送信前DLPレイヤーへ移行する。
+**Goal:** AIまえチェックを、paste前チェック中心の拡張から、ChatGPT / Claude / Gemini の通常入力体験を維持した送信前DLPレイヤーへ移行する。
 
 **Architecture:** 既存monorepoを維持し、`packages/core`をサイト非依存のDLPエンジン、`packages/llm`をWebLLMによるGeneralize / Minimize / safe_prompt生成、`apps/extension`をサイトadapter・送信インターセプト・UI、`apps/demo`をLP兼体験デモとして分離する。サイドパネルや独自入力欄は作らず、対象サイトの通常入力欄を使う。
 
@@ -114,7 +114,7 @@ export interface SiteAdapter {
 - [ ] badgeは`✓ Safe`または`N risks`の短い表示にする。入力欄上へ大きなUIを重ねず、対象ページの邪魔にならない固定小UIとして表示する。
 - [ ] paste内容にSecret Guard対象が含まれる場合、可能な限り`preventDefault()`して生データを入力欄に入れない。
 - [ ] high/critical paste UIは「削除して貼り付け」「安全化して貼り付け」「キャンセル」のみにする。
-- [ ] medium以下のpasteは必要に応じて既存の確認モーダルに流せるが、デフォルトで「そのまま貼る」を強調しない。
+- [ ] medium以下のpasteは必要に応じて既存の確認モーダルに流せるが、デフォルトで「そのまま入力」を強調しない。
 - [ ] ユーザー本文や検出文字列を`console.log`しない。
 - [ ] `pnpm build:extension`、`pnpm typecheck`を通す。
 
@@ -200,7 +200,7 @@ export interface SanitizeAnalysisResult {
 - Modify: `AGENTS.md`
 - Test: `apps/demo/tests/demo.spec.ts`
 
-- [ ] LPコピーを「AIに貼る前」から「LLMに送信される前に検出・安全化」へ寄せる。
+- [ ] LPコピーを「AIに送る前」から「LLMに送信される前に検出・安全化」へ寄せる。
 - [ ] デモはrisk score、カテゴリ単位チェック、Mask / Generalize / Minimize切替、安全化後テキストを体験できる構成にする。
 - [ ] WebLLMモデルファイル取得、private browserでの保存容量制限、WebGPU非対応時の挙動をREADMEに明記する。
 - [ ] 「完全に安全」「ゼロリスク」「生データが対象サイトに一切見えない」といった表現を避ける。

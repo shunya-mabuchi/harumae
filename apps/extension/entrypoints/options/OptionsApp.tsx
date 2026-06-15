@@ -1,8 +1,8 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { CheckCircle2, Database, ShieldCheck, Sparkles } from "lucide-react";
-import { detectorRules } from "@harumae/core";
-import { DEFAULT_MODEL_ID } from "@harumae/llm";
-import { DEFAULT_SETTINGS, loadSettings, saveSettings, type HarumaeSettings, type LlmRunMode } from "../../src/lib/settings";
+import { detectorRules } from "@ai-mae-check/core";
+import { DEFAULT_MODEL_ID } from "@ai-mae-check/llm";
+import { DEFAULT_SETTINGS, loadSettings, saveSettings, type AiMaeCheckSettings, type LlmRunMode } from "../../src/lib/settings";
 import { targetSites, type SiteId } from "../../src/lib/sites";
 
 const modelChoices = [
@@ -58,7 +58,7 @@ function Section({ icon, title, children }: { icon: ReactNode; title: string; ch
 }
 
 export function OptionsApp() {
-  const [settings, setSettings] = useState<HarumaeSettings>(DEFAULT_SETTINGS);
+  const [settings, setSettings] = useState<AiMaeCheckSettings>(DEFAULT_SETTINGS);
   const [savedMessage, setSavedMessage] = useState("設定を読み込んでいます。");
   const [modelChoice, setModelChoice] = useState(DEFAULT_MODEL_ID);
 
@@ -70,7 +70,7 @@ export function OptionsApp() {
     });
   }, []);
 
-  const updateSettings = (updater: (current: HarumaeSettings) => HarumaeSettings) => {
+  const updateSettings = (updater: (current: AiMaeCheckSettings) => AiMaeCheckSettings) => {
     setSettings((current) => {
       const next = updater(current);
       void saveSettings(next).then(() => setSavedMessage("保存しました。"));
@@ -114,11 +114,11 @@ export function OptionsApp() {
         <header className="mb-8">
           <p className="mb-2 inline-flex items-center gap-2 rounded-md border border-line bg-paper px-3 py-2 text-sm font-semibold text-leaf">
             <ShieldCheck size={16} aria-hidden="true" />
-            貼るまえ
+            AIまえチェック
           </p>
           <h1 className="text-3xl font-bold tracking-normal">設定</h1>
           <p className="mt-3 max-w-3xl leading-7 text-stone-600">
-            貼り付け本文は保存しません。ここで保存されるのは、対象サイト、検出ルール、AI文脈チェックに関する設定だけです。
+            入力本文や送信本文は保存しません。ここで保存されるのは、対象サイト、検出ルール、AI文脈チェックに関する設定だけです。
           </p>
           <p className="mt-2 text-sm font-semibold text-leaf">{savedMessage}</p>
         </header>
@@ -128,8 +128,8 @@ export function OptionsApp() {
             <Toggle
               checked={settings.enabled}
               onChange={(enabled) => updateSettings((current) => ({ ...current, enabled }))}
-              label="貼るまえを有効にする"
-              description="無効にすると、対象サイトでもpasteイベントに介入しません。"
+              label="AIまえチェックを有効にする"
+              description="無効にすると、対象サイトでの確認を行いません。"
             />
           </Section>
 
@@ -241,7 +241,7 @@ export function OptionsApp() {
             </div>
 
             <div className="rounded-md border border-line bg-white p-4 text-sm leading-7 text-stone-700">
-              <p>貼り付け本文は外部サーバーに送信されません。検出とAI文脈チェックはユーザーのブラウザ内で実行されます。</p>
+              <p>入力本文や送信本文は外部サーバーに送信されません。検出とAI文脈チェックはユーザーのブラウザ内で実行されます。</p>
               <p className="mt-2">
                 WebLLMの初回利用時には、ローカル推論用のモデルファイルを取得する場合があります。モデル取得後はブラウザキャッシュを利用します。
               </p>

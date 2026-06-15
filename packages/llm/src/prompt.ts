@@ -17,7 +17,7 @@ function summarizeExistingFindings(options: ContextPromptOptions): string {
 export function buildContextRiskPrompt(input: string, options: ContextPromptOptions = {}): ChatMessage[] {
   const maxCandidates = options.maxCandidates ?? DEFAULT_MAX_CANDIDATES;
   const system = [
-    "あなたは、外部AIや外部フォームに文章を貼る前の確認を補助する文脈リスク検出器です。",
+    "あなたは、外部AIや外部フォームに文章を送る前の確認を補助する文脈リスク検出器です。",
     "目的は、入力文からマスクした方がよい候補を見つけることです。",
     "最終的な安全判定を断言せず、注意候補だけをJSONで返してください。"
   ].join("\n");

@@ -1,12 +1,12 @@
-import { detectorRules } from "@harumae/core";
-import { DEFAULT_MODEL_ID } from "@harumae/llm";
+import { detectorRules } from "@ai-mae-check/core";
+import { DEFAULT_MODEL_ID } from "@ai-mae-check/llm";
 import { siteIdFromHostname, targetSites, type SiteId } from "./sites";
 
-export const SETTINGS_KEY = "harumae.settings.v1";
+export const SETTINGS_KEY = "ai-mae-check.settings.v1";
 
 export type LlmRunMode = "manual" | "auto";
 
-export interface HarumaeSettings {
+export interface AiMaeCheckSettings {
   enabled: boolean;
   sites: Record<SiteId, boolean>;
   rules: Record<string, boolean>;
@@ -25,7 +25,7 @@ function defaultRules(): Record<string, boolean> {
   return Object.fromEntries(detectorRules.map((rule) => [rule.id, true]));
 }
 
-export const DEFAULT_SETTINGS: HarumaeSettings = {
+export const DEFAULT_SETTINGS: AiMaeCheckSettings = {
   enabled: true,
   sites: defaultSites(),
   rules: defaultRules(),
@@ -48,7 +48,7 @@ function booleanEntries(value: unknown): Record<string, boolean> {
   return Object.fromEntries(Object.entries(value).filter((entry): entry is [string, boolean] => typeof entry[1] === "boolean"));
 }
 
-export function normalizeSettings(value: unknown): HarumaeSettings {
+export function normalizeSettings(value: unknown): AiMaeCheckSettings {
   if (!isRecord(value)) {
     return DEFAULT_SETTINGS;
   }
@@ -75,7 +75,7 @@ export function normalizeSettings(value: unknown): HarumaeSettings {
   };
 }
 
-export async function loadSettings(): Promise<HarumaeSettings> {
+export async function loadSettings(): Promise<AiMaeCheckSettings> {
   return new Promise((resolve) => {
     chrome.storage.local.get(SETTINGS_KEY, (items) => {
       resolve(normalizeSettings(items[SETTINGS_KEY]));
@@ -83,19 +83,19 @@ export async function loadSettings(): Promise<HarumaeSettings> {
   });
 }
 
-export async function saveSettings(settings: HarumaeSettings): Promise<void> {
+export async function saveSettings(settings: AiMaeCheckSettings): Promise<void> {
   return new Promise((resolve) => {
     chrome.storage.local.set({ [SETTINGS_KEY]: settings }, () => resolve());
   });
 }
 
-export function disabledRuleIds(settings: HarumaeSettings): string[] {
+export function disabledRuleIds(settings: AiMaeCheckSettings): string[] {
   return Object.entries(settings.rules)
     .filter(([, enabled]) => !enabled)
     .map(([ruleId]) => ruleId);
 }
 
-export function isSiteEnabled(settings: HarumaeSettings, hostname: string): boolean {
+export function isSiteEnabled(settings: AiMaeCheckSettings, hostname: string): boolean {
   const siteId = siteIdFromHostname(hostname);
   if (!siteId) {
     return false;

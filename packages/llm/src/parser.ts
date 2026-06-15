@@ -93,7 +93,7 @@ export function parseContextAnalysisJson(rawText: string, options: ParseContextA
       category: toCategory(rawCandidate.category),
       surface,
       label: label.length > 0 ? label : "文脈リスク候補",
-      reason: reason.length > 0 ? reason : "外部に貼る前に確認したい候補です。",
+      reason: reason.length > 0 ? reason : "外部に送る前に確認したい候補です。",
       riskLevel: toRiskLevel(rawCandidate.riskLevel),
       suggestedPlaceholder:
         typeof rawCandidate.suggestedPlaceholder === "string" && rawCandidate.suggestedPlaceholder.trim().length > 0

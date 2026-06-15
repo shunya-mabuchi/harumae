@@ -4,7 +4,7 @@ import {
   maskSensitiveText,
   mergeFindings,
   type DetectionResult
-} from "@harumae/core";
+} from "@ai-mae-check/core";
 import {
   convertContextCandidatesToFindings,
   classifyLlmError,
@@ -16,7 +16,7 @@ import {
   type LlmContextAnalyzer,
   type LlmErrorDetail,
   type LlmProgress
-} from "@harumae/llm";
+} from "@ai-mae-check/llm";
 import { DemoCard } from "./components/DemoCard";
 import { DetectionTargetCards } from "./components/DetectionTargetCards";
 import { Footer } from "./components/Footer";
@@ -119,7 +119,7 @@ export function App() {
   const runLlmDetection = async () => {
     if (text.trim().length === 0) {
       setLlmStatus("error");
-      setLlmMessage("先に貼り付け前テキストを入力してください。");
+      setLlmMessage("先に送信前テキストを入力してください。");
       setLlmErrorDetail(null);
       return;
     }

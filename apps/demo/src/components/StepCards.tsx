@@ -3,9 +3,9 @@ import { SectionHeading, Surface } from "./ui";
 
 const steps = [
   {
-    label: "1. 貼る",
-    title: "AIに貼る直前を検知",
-    text: "ChatGPTやClaudeなどの対象サイトで、貼り付け操作をきっかけに確認します。",
+    label: "1. 入力",
+    title: "AIに送る直前を検知",
+    text: "ChatGPTやClaudeなどの対象サイトで、送信前の操作をきっかけに確認します。",
     icon: MousePointerClick
   },
   {
@@ -27,7 +27,7 @@ const steps = [
     icon: LockKeyhole
   },
   {
-    label: "5. 貼る",
+    label: "5. 使う",
     title: "Chrome拡張として利用",
     text: "バックエンドなしで動き、設定だけをブラウザ内に保存します。",
     icon: Chrome
@@ -40,7 +40,7 @@ export function StepCards() {
       <div className="mx-auto max-w-7xl">
         <SectionHeading
           eyebrow="仕組み"
-          title="貼る前の確認を、ひとつの流れに。"
+          title="送る前の確認を、ひとつの流れに。"
           description="不安を煽るセキュリティ製品ではなく、送信前に自分で確認するための小さなレイヤーです。"
         />
         <div className="grid gap-3 md:grid-cols-5">

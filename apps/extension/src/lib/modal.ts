@@ -4,7 +4,7 @@ import {
   type DetectionResult,
   type Finding,
   type RiskLevel
-} from "@harumae/core";
+} from "@ai-mae-check/core";
 import {
   classifyLlmError,
   convertContextCandidatesToFindings,
@@ -13,8 +13,8 @@ import {
   type ContextRiskCandidate,
   type LlmErrorDetail,
   type LlmProgress
-} from "@harumae/llm";
-import type { HarumaeSettings } from "./settings";
+} from "@ai-mae-check/llm";
+import type { AiMaeCheckSettings } from "./settings";
 
 type ModalDecision =
   | {
@@ -28,7 +28,7 @@ type ModalDecision =
 interface PasteReviewModalOptions {
   inputText: string;
   detection: DetectionResult;
-  settings: HarumaeSettings;
+  settings: AiMaeCheckSettings;
 }
 
 const riskLabel: Record<RiskLevel, string> = {
@@ -404,9 +404,9 @@ export async function showPasteReviewModal(options: PasteReviewModalOptions): Pr
     body.append(summary, grid, llmPanel);
 
     const footer = createElement("footer", "hm-footer");
-    const maskButton = createElement("button", "hm-button hm-primary", "マスクして貼る");
+    const maskButton = createElement("button", "hm-button hm-primary", "マスクして入力");
     const llmButton = createElement("button", "hm-button hm-dark", "AI文脈チェックも実行");
-    const rawButton = createElement("button", "hm-button", "そのまま貼る");
+    const rawButton = createElement("button", "hm-button", "そのまま入力");
     const cancelButton = createElement("button", "hm-button", "キャンセル");
     footer.append(maskButton, llmButton, rawButton, cancelButton);
 

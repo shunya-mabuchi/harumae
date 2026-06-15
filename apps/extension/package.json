@@ -1,5 +1,5 @@
 {
-  "name": "@harumae/extension",
+  "name": "@ai-mae-check/extension",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,8 +9,8 @@
     "typecheck": "wxt prepare && tsc --noEmit"
   },
   "dependencies": {
-    "@harumae/core": "workspace:*",
-    "@harumae/llm": "workspace:*",
+    "@ai-mae-check/core": "workspace:*",
+    "@ai-mae-check/llm": "workspace:*",
     "lucide-react": "^0.468.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
