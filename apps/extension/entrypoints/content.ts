@@ -1,5 +1,7 @@
 import { defineContentScript } from "wxt/utils/define-content-script";
-import { detectSensitiveText } from "@ai-mae-check/core";
+import { detectSensitiveText, evaluateDlpPolicy, type DetectionResult } from "@ai-mae-check/core";
+import { adapterForHostname } from "../src/content/adapters";
+import { installSendInterceptor } from "../src/content/dom/sendInterceptor";
 import { captureCurrentRange, findEditableTarget, insertTextAtTarget } from "../src/lib/dom";
 import { DEFAULT_SETTINGS, disabledRuleIds, isSiteEnabled, loadSettings, normalizeSettings, SETTINGS_KEY, type AiMaeCheckSettings } from "../src/lib/settings";
 import { targetMatches } from "../src/lib/sites";
@@ -30,8 +32,51 @@ export default defineContentScript({
       },
       true
     );
+
+    const adapter = adapterForHostname(window.location.hostname);
+    if (adapter) {
+      installSendInterceptor({
+        adapter,
+        isEnabled: () => settings.enabled && isSiteEnabled(settings, window.location.hostname),
+        prepareReview: (inputText) => {
+          const detection = createDetection(inputText, settings);
+          const policy = evaluateDlpPolicy(detection.findings);
+
+          if (detection.findings.length === 0 || policy.action === "allow") {
+            return null;
+          }
+
+          return {
+            inputText,
+            detection
+          };
+        },
+        review: async ({ inputText, detection }) => {
+          const decision = await showPasteReviewModal({
+            inputText,
+            detection,
+            settings
+          });
+
+          if (decision.type === "insert") {
+            return {
+              type: "replaceAndSubmit",
+              text: decision.text
+            };
+          }
+
+          return { type: "cancel" };
+        }
+      });
+    }
   }
 });
+
+function createDetection(inputText: string, settings: AiMaeCheckSettings): DetectionResult {
+  return detectSensitiveText(inputText, {
+    disabledRuleIds: disabledRuleIds(settings)
+  });
+}
 
 async function handlePaste(event: ClipboardEvent, settings: AiMaeCheckSettings): Promise<void> {
   if (!settings.enabled || !isSiteEnabled(settings, window.location.hostname)) {
@@ -48,9 +93,7 @@ async function handlePaste(event: ClipboardEvent, settings: AiMaeCheckSettings):
     return;
   }
 
-  const detection = detectSensitiveText(pastedText, {
-    disabledRuleIds: disabledRuleIds(settings)
-  });
+  const detection = createDetection(pastedText, settings);
 
   if (detection.findings.length === 0) {
     return;
