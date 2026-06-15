@@ -1,4 +1,4 @@
-import type { Finding, RiskLevel } from "@ai-mae-check/core";
+import type { DlpCategory, DlpPolicyDecision, Finding, RiskLevel } from "@ai-mae-check/core";
 
 export interface LlmAnalyzerOptions {
   modelId?: string;
@@ -40,6 +40,14 @@ export interface AnalyzeContextOptions {
   onProgress?: (progress: LlmProgress) => void;
 }
 
+export interface AnalyzeSanitizeOptions {
+  existingFindings?: Finding[];
+  language?: "ja" | "en" | string;
+  mode?: "generalize" | "minimize";
+  signal?: AbortSignal;
+  onProgress?: (progress: LlmProgress) => void;
+}
+
 export type ContextRiskCategory =
   | "person_name"
   | "company_name"
@@ -74,8 +82,35 @@ export interface ContextAnalysisResult {
   errorDetail?: LlmErrorDetail;
 }
 
+export type SanitizeAction = "mask" | "generalize" | "remove" | "block";
+
+export interface SanitizeDetectedCategory {
+  type: DlpCategory;
+  risk: RiskLevel;
+  action: SanitizeAction;
+}
+
+export interface ParsedSanitizeAnalysis {
+  block: boolean;
+  riskLevel: RiskLevel;
+  detectedCategories: SanitizeDetectedCategory[];
+  safePrompt: string;
+  userVisibleExplanation: string;
+}
+
+export interface SanitizeAnalysisResult extends ParsedSanitizeAnalysis {
+  rawText: string;
+  modelId: string;
+  elapsedMs: number;
+  residualFindings: Finding[];
+  residualPolicy: DlpPolicyDecision;
+  error?: string;
+  errorDetail?: LlmErrorDetail;
+}
+
 export interface LlmContextAnalyzer {
   analyze(input: string, options?: AnalyzeContextOptions): Promise<ContextAnalysisResult>;
+  analyzeSanitize(input: string, options?: AnalyzeSanitizeOptions): Promise<SanitizeAnalysisResult>;
   dispose(): void;
 }
 
@@ -87,6 +122,11 @@ export interface ConvertCandidatesOptions {
 export interface ContextPromptOptions {
   existingFindings?: Finding[];
   maxCandidates?: number;
+}
+
+export interface SanitizePromptOptions {
+  existingFindings?: Finding[];
+  mode?: "generalize" | "minimize";
 }
 
 export interface ChatMessage {

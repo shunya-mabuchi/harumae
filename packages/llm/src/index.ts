@@ -1,4 +1,4 @@
-export { analyzeContextRisk, createLlmContextAnalyzer } from "./analyzer";
+export { analyzeContextRisk, analyzeSanitizePrompt, createLlmContextAnalyzer } from "./analyzer";
 export {
   ANALYZING_MESSAGE,
   COMPATIBLE_LIGHTWEIGHT_MODEL_ID,
@@ -15,10 +15,12 @@ export { convertContextCandidatesToFindings } from "./convert";
 export { classifyLlmError, formatLlmErrorMessage } from "./errors";
 export { getAvailableModelIds, resolveModelId } from "./model";
 export { parseContextAnalysisJson } from "./parser";
-export { buildContextRiskPrompt } from "./prompt";
+export { createSanitizeAnalysisResult, parseSanitizeAnalysisJson } from "./sanitizeParser";
+export { buildContextRiskPrompt, buildSanitizePrompt } from "./prompt";
 export { isWebGpuAvailable } from "./webgpu";
 export type {
   AnalyzeContextOptions,
+  AnalyzeSanitizeOptions,
   ChatMessage,
   ContextAnalysisResult,
   ContextPromptOptions,
@@ -29,5 +31,10 @@ export type {
   LlmContextAnalyzer,
   LlmErrorDetail,
   LlmErrorKind,
-  LlmProgress
+  LlmProgress,
+  ParsedSanitizeAnalysis,
+  SanitizeAction,
+  SanitizeAnalysisResult,
+  SanitizeDetectedCategory,
+  SanitizePromptOptions
 } from "./types";
