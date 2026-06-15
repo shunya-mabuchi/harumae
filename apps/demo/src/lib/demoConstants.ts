@@ -1,4 +1,4 @@
-import type { RiskLevel } from "@harumae/core";
+import type { RiskLevel } from "@ai-mae-check/core";
 
 export const sampleText = `田中太郎です。メールは taro@example.com、電話番号は 090-1234-5678 です。
 

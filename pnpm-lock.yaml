@@ -47,10 +47,10 @@ importers:
 
   apps/demo:
     dependencies:
-      '@harumae/core':
+      '@ai-mae-check/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@harumae/llm':
+      '@ai-mae-check/llm':
         specifier: workspace:*
         version: link:../../packages/llm
       lucide-react:
@@ -72,10 +72,10 @@ importers:
 
   apps/extension:
     dependencies:
-      '@harumae/core':
+      '@ai-mae-check/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@harumae/llm':
+      '@ai-mae-check/llm':
         specifier: workspace:*
         version: link:../../packages/llm
       lucide-react:
@@ -99,7 +99,7 @@ importers:
 
   packages/llm:
     dependencies:
-      '@harumae/core':
+      '@ai-mae-check/core':
         specifier: workspace:*
         version: link:../core
       '@mlc-ai/web-llm':

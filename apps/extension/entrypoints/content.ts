@@ -1,7 +1,7 @@
 import { defineContentScript } from "wxt/utils/define-content-script";
-import { detectSensitiveText } from "@harumae/core";
+import { detectSensitiveText } from "@ai-mae-check/core";
 import { captureCurrentRange, findEditableTarget, insertTextAtTarget } from "../src/lib/dom";
-import { DEFAULT_SETTINGS, disabledRuleIds, isSiteEnabled, loadSettings, normalizeSettings, SETTINGS_KEY, type HarumaeSettings } from "../src/lib/settings";
+import { DEFAULT_SETTINGS, disabledRuleIds, isSiteEnabled, loadSettings, normalizeSettings, SETTINGS_KEY, type AiMaeCheckSettings } from "../src/lib/settings";
 import { targetMatches } from "../src/lib/sites";
 import { showPasteReviewModal } from "../src/lib/modal";
 
@@ -9,7 +9,7 @@ export default defineContentScript({
   matches: targetMatches,
   runAt: "document_start",
   main() {
-    let settings: HarumaeSettings = DEFAULT_SETTINGS;
+    let settings: AiMaeCheckSettings = DEFAULT_SETTINGS;
 
     void loadSettings().then((loadedSettings) => {
       settings = loadedSettings;
@@ -33,7 +33,7 @@ export default defineContentScript({
   }
 });
 
-async function handlePaste(event: ClipboardEvent, settings: HarumaeSettings): Promise<void> {
+async function handlePaste(event: ClipboardEvent, settings: AiMaeCheckSettings): Promise<void> {
   if (!settings.enabled || !isSiteEnabled(settings, window.location.hostname)) {
     return;
   }

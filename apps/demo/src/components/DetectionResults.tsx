@@ -1,6 +1,6 @@
 import { AlertTriangle, CheckCircle2, Sparkles } from "lucide-react";
-import type { DetectionSummary, Finding, RiskLevel } from "@harumae/core";
-import type { ContextRiskCandidate, LlmErrorDetail } from "@harumae/llm";
+import type { DetectionSummary, Finding, RiskLevel } from "@ai-mae-check/core";
+import type { ContextRiskCandidate, LlmErrorDetail } from "@ai-mae-check/llm";
 import { riskLabel, riskMeterTone, riskTone, type LlmStatus } from "../lib/demoConstants";
 
 function riskPercent(summary: DetectionSummary): number {

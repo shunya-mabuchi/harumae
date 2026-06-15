@@ -1,6 +1,6 @@
 import { Clipboard, RefreshCcw, ShieldCheck, Sparkles, Wand2 } from "lucide-react";
-import type { DetectionResult, DetectionSummary, Finding } from "@harumae/core";
-import type { ContextRiskCandidate, LlmErrorDetail } from "@harumae/llm";
+import type { DetectionResult, DetectionSummary, Finding } from "@ai-mae-check/core";
+import type { ContextRiskCandidate, LlmErrorDetail } from "@ai-mae-check/llm";
 import type { LlmStatus } from "../lib/demoConstants";
 import { Button, Surface } from "./ui";
 import { DetectionResults } from "./DetectionResults";
@@ -55,7 +55,7 @@ export function DemoCard({
         <div className="mb-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
           <div>
             <p className="mb-3 text-sm font-bold text-leaf">ライブデモ</p>
-            <h2 className="max-w-4xl text-3xl font-black leading-tight text-ink md:text-4xl">貼る前に、消す場所を選ぶ。</h2>
+            <h2 className="max-w-4xl text-3xl font-black leading-tight text-ink md:text-4xl">送る前に、消す場所を選ぶ。</h2>
             <p className="mt-4 max-w-3xl text-base leading-7 text-muted">
               サンプル文を入れて、検出項目ごとにマスク対象を切り替えてください。本文は保存されません。
             </p>
@@ -90,7 +90,7 @@ export function DemoCard({
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.08em] text-muted">Paste Draft</p>
-                  <h3 className="text-xl font-black text-ink">貼り付け前テキスト</h3>
+                  <h3 className="text-xl font-black text-ink">送信前テキスト</h3>
                 </div>
                 <span className="rounded-card bg-cloud px-3 py-2 text-xs font-bold text-muted">{text.length.toLocaleString()}文字</span>
               </div>
@@ -99,7 +99,7 @@ export function DemoCard({
                   value={text}
                   onChange={(event) => onTextChange(event.target.value)}
                   className="min-h-[430px] w-full resize-y bg-transparent p-2 text-sm leading-7 text-ink outline-none placeholder:text-slate-400"
-                  placeholder="ここにAIへ貼る前の文章を入力してください。"
+                  placeholder="ここにAIへ送る前の文章を入力してください。"
                 />
               </div>
             </div>
