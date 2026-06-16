@@ -16,21 +16,22 @@ export default {
         ]
       },
       colors: {
-        ink: "#202124",
-        muted: "#63665f",
-        paper: "#f7f4ed",
-        surface: "#fffdf8",
-        cloud: "#eeebe3",
-        line: "#dedbd1",
-        leaf: "#2f7d57",
+        ink: "#171a1f",
+        muted: "#616a73",
+        paper: "#f4f7f1",
+        surface: "#fffffb",
+        cloud: "#edf2ee",
+        line: "#d9ded8",
+        leaf: "#247a5b",
+        signal: "#2857a3",
         caution: "#b45309"
       },
       borderRadius: {
         card: "8px"
       },
       boxShadow: {
-        soft: "0 14px 38px rgba(32, 33, 36, 0.08)",
-        panel: "0 28px 80px rgba(32, 33, 36, 0.16)"
+        soft: "0 12px 34px rgba(23, 26, 31, 0.07)",
+        panel: "0 28px 80px rgba(23, 26, 31, 0.16)"
       }
     }
   },

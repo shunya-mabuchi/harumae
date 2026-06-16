@@ -6,6 +6,12 @@ import { Button, Surface } from "./ui";
 import { DetectionResults } from "./DetectionResults";
 import { MaskResult } from "./MaskResult";
 
+const workflowSteps = [
+  { label: "1", title: "下書きを入れる", text: "サンプルでも自由入力でもOK" },
+  { label: "2", title: "検出結果を確認", text: "チェックを外すと出力も変わる" },
+  { label: "3", title: "マスクして使う", text: "送る前の文章だけをコピー" }
+];
+
 export function DemoCard({
   text,
   onTextChange,
@@ -52,65 +58,86 @@ export function DemoCard({
   const findings: Finding[] = detection?.findings ?? [];
 
   return (
-    <section id="demo" className="px-5 py-16 md:py-20">
+    <section id="demo" className="px-5 py-16 md:py-24">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+        <div className="mb-8 grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(360px,0.7fr)] lg:items-end">
           <div>
-            <p className="mb-3 text-sm font-bold text-leaf">ライブデモ</p>
-            <h2 className="max-w-4xl text-3xl font-black leading-tight text-ink md:text-4xl">送る前に、消す場所を選ぶ。</h2>
-            <p className="mt-4 max-w-3xl text-base leading-7 text-muted">
-              サンプル文を入れて、検出項目ごとにマスク対象を切り替えてください。AI文脈チェックは貼り付けだけでは実行されず、ボタンで起動します。
+            <p className="mb-3 text-sm font-black text-leaf">ライブデモ</p>
+            <h2 className="text-3xl font-black leading-tight text-ink md:text-5xl">安全化ワークベンチ</h2>
+            <p className="mt-4 max-w-3xl text-base leading-7 text-muted md:text-lg">
+              文章を入れる、検出する、マスク結果を確認する。AIに送る前のひと手間を、実際の操作として体験できます。
             </p>
           </div>
-          <div className="flex flex-wrap gap-3 lg:max-w-[680px] lg:justify-end">
-            <Button onClick={onInsertSample} variant="ghost">
-              <Clipboard size={17} aria-hidden="true" />
-              ルール用サンプル
-            </Button>
-            <Button onClick={onInsertContextSample} variant="ghost">
-              <Sparkles size={17} aria-hidden="true" />
-              文脈用サンプル
-            </Button>
-            <Button onClick={onRuleDetection} variant="primary">
-              <ShieldCheck size={17} aria-hidden="true" />
-              ルールベースで検出
-            </Button>
-            <Button onClick={onLlmDetection} variant="secondary" disabled={llmStatus === "loading" || llmStatus === "analyzing"}>
-              <Sparkles size={17} aria-hidden="true" />
-              AI文脈チェックも実行
-            </Button>
-            <Button onClick={onCopyMaskedText} variant="ghost" disabled={!maskedText}>
-              <Wand2 size={17} aria-hidden="true" />
-              マスキング後テキストをコピー
-            </Button>
-            <Button onClick={onReset} variant="ghost">
-              <RefreshCcw size={17} aria-hidden="true" />
-              リセット
-            </Button>
+          <div className="grid gap-2 rounded-card border border-line bg-white/75 p-3 shadow-soft">
+            <p className="text-xs font-black text-leaf">3ステップで確認</p>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {workflowSteps.map((step) => (
+                <div key={step.title} className="rounded-[6px] bg-cloud p-3">
+                  <p className="text-xs font-black text-leaf">{step.label}</p>
+                  <p className="mt-1 text-sm font-black text-ink">{step.title}</p>
+                  <p className="mt-1 text-xs leading-5 text-muted">{step.text}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        <Surface className="overflow-hidden">
-          <div className="grid gap-0 lg:grid-cols-[1.04fr_0.96fr]">
-            <div className="border-b border-line p-4 md:p-6 lg:border-b-0 lg:border-r">
+        <Surface className="overflow-hidden border-ink/10">
+          <div className="border-b border-line bg-ink px-4 py-4 text-white md:px-6">
+            <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+              <div>
+                <p className="text-xs font-black text-white/60">AIまえチェック デモ</p>
+                <h3 className="mt-1 text-xl font-black tracking-normal">入力からマスク結果まで、同じ画面で確認</h3>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2 lg:flex lg:flex-wrap xl:justify-end">
+                <Button onClick={onInsertSample} variant="ghost" className="w-full border-white/20 bg-white/10 text-white hover:bg-white/15 lg:w-auto">
+                  <Clipboard size={17} aria-hidden="true" />
+                  ルール用サンプル
+                </Button>
+                <Button onClick={onInsertContextSample} variant="ghost" className="w-full border-white/20 bg-white/10 text-white hover:bg-white/15 lg:w-auto">
+                  <Sparkles size={17} aria-hidden="true" />
+                  文脈用サンプル
+                </Button>
+                <Button onClick={onRuleDetection} variant="secondary" className="w-full lg:w-auto">
+                  <ShieldCheck size={17} aria-hidden="true" />
+                  検出する
+                </Button>
+                <Button onClick={onLlmDetection} variant="ghost" disabled={llmStatus === "loading" || llmStatus === "analyzing"} className="w-full border-white/20 bg-white text-ink hover:bg-cloud lg:w-auto">
+                  <Sparkles size={17} aria-hidden="true" />
+                  AI文脈チェック
+                </Button>
+                <Button onClick={onCopyMaskedText} variant="ghost" disabled={!maskedText} className="w-full border-white/20 bg-white/10 text-white hover:bg-white/15 lg:w-auto">
+                  <Wand2 size={17} aria-hidden="true" />
+                  コピー
+                </Button>
+                <Button onClick={onReset} variant="ghost" className="w-full border-white/20 bg-white/10 text-white hover:bg-white/15 lg:w-auto">
+                  <RefreshCcw size={17} aria-hidden="true" />
+                  リセット
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-0 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.82fr)_minmax(0,1fr)]">
+            <div className="border-b border-line bg-white p-4 md:p-6 xl:border-b-0 xl:border-r">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-xs font-bold text-muted">送信前の下書き</p>
-                  <h3 className="text-xl font-black text-ink">送信前テキスト</h3>
+                  <p className="text-xs font-black text-muted">送信前の下書き</p>
+                  <h3 className="text-xl font-black text-ink">入力テキスト</h3>
                 </div>
-                <span className="rounded-card bg-cloud px-3 py-2 text-xs font-bold text-muted">{text.length.toLocaleString()}文字</span>
+                <span className="rounded-card bg-cloud px-3 py-2 text-xs font-black text-muted">{text.length.toLocaleString()}文字</span>
               </div>
-              <div className="rounded-card border border-line bg-white/80 p-3 shadow-inner">
+              <div className="rounded-card border border-line bg-[#fbfdf9] p-3 shadow-inner">
                 <textarea
                   value={text}
                   onChange={(event) => onTextChange(event.target.value)}
-                  className="min-h-[430px] w-full resize-y bg-transparent p-2 text-sm leading-7 text-ink outline-none placeholder:text-slate-400"
+                  className="min-h-[320px] w-full resize-y bg-transparent p-2 text-sm leading-7 text-ink outline-none placeholder:text-slate-400 md:min-h-[480px]"
                   placeholder="ここにAIへ送る前の文章を入力してください。"
                 />
               </div>
             </div>
 
-            <div className="p-4 md:p-6">
+            <div className="border-b border-line bg-[#f8faf7] p-4 md:p-6 xl:border-b-0 xl:border-r">
               <DetectionResults
                 findings={findings}
                 selectedFindingIds={selectedRuleFindingIds}
@@ -124,10 +151,10 @@ export function DemoCard({
                 onToggleCandidate={onToggleCandidate}
               />
             </div>
-          </div>
 
-          <div className="border-t border-line bg-white/60 p-4 md:p-6">
-            <MaskResult maskedText={maskedText} copyMessage={copyMessage} onCopy={onCopyMaskedText} />
+            <div className="bg-white p-4 md:p-6">
+              <MaskResult maskedText={maskedText} copyMessage={copyMessage} onCopy={onCopyMaskedText} />
+            </div>
           </div>
         </Surface>
       </div>

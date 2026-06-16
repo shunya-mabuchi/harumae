@@ -13,17 +13,17 @@ const targets = [
 
 export function DetectionTargetCards() {
   return (
-    <section className="mx-auto max-w-7xl px-5 py-16 md:py-20">
+    <section className="mx-auto max-w-7xl px-5 py-16 md:py-24">
       <SectionHeading
         eyebrow="チェック対象"
         title="AIに送る前、こんな情報が混ざっていませんか？"
         description="日常の入力文に混ざりがちな情報を、送信前にブラウザ内で確認します。"
       />
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-7">
         {targets.map((target) => {
           const Icon = target.icon;
           return (
-            <Surface key={target.label} className="p-4">
+            <Surface key={target.label} className="p-4 transition hover:-translate-y-0.5 hover:border-leaf/30 hover:shadow-panel">
               <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-card bg-leaf/10 text-leaf">
                 <Icon size={20} aria-hidden="true" />
               </div>

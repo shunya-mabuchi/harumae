@@ -1,14 +1,17 @@
-import { AlertTriangle, CheckCircle2, Sparkles } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ListChecks, Sparkles } from "lucide-react";
 import type { DetectionSummary, Finding, RiskLevel } from "@ai-mae-check/core";
 import type { ContextRiskCandidate, LlmErrorDetail } from "@ai-mae-check/llm";
 import { riskLabel, riskMeterTone, riskTone, type LlmStatus } from "../lib/demoConstants";
 
 function riskPercent(summary: DetectionSummary): number {
-  const score = summary.high * 34 + summary.medium * 18 + summary.low * 8;
+  const score = summary.critical * 42 + summary.high * 34 + summary.medium * 18 + summary.low * 8;
   return Math.min(100, score);
 }
 
 function strongestRisk(summary: DetectionSummary): RiskLevel {
+  if (summary.critical > 0) {
+    return "critical";
+  }
   if (summary.high > 0) {
     return "high";
   }
@@ -16,6 +19,25 @@ function strongestRisk(summary: DetectionSummary): RiskLevel {
     return "medium";
   }
   return "low";
+}
+
+function statusCopy(summary: DetectionSummary): { label: string; text: string } {
+  if (summary.critical > 0 || summary.high > 0) {
+    return {
+      label: "要マスク",
+      text: "秘密情報や個人情報の可能性があります。送る前に対象を確認してください。"
+    };
+  }
+  if (summary.medium > 0) {
+    return {
+      label: "確認推奨",
+      text: "文脈によって注意が必要な情報があります。必要なものだけ残せます。"
+    };
+  }
+  return {
+    label: "未検出",
+    text: "検出を実行すると、リスクとカテゴリがここに表示されます。"
+  };
 }
 
 function categoryCounts(findings: Finding[]): Array<{ label: string; count: number }> {
@@ -43,7 +65,7 @@ function LlmCandidates({
     <div className="space-y-3">
       <h4 className="text-sm font-black text-ink">AI文脈チェック結果</h4>
       {candidates.map((candidate) => (
-        <label key={candidate.id} className="block rounded-card border border-line bg-white/80 p-3">
+        <label key={candidate.id} className="block rounded-card border border-line bg-white p-3 shadow-soft">
           <div className="flex items-start gap-3">
             <input
               type="checkbox"
@@ -53,7 +75,7 @@ function LlmCandidates({
             />
             <div className="min-w-0 flex-1">
               <div className="mb-2 flex flex-wrap items-center gap-2">
-                <span className="font-bold text-ink">{candidate.label}</span>
+                <span className="font-black text-ink">{candidate.label}</span>
                 <span className={`rounded-card border px-2 py-1 text-xs font-bold ${riskTone[candidate.riskLevel]}`}>
                   危険度: {riskLabel[candidate.riskLevel]}
                 </span>
@@ -95,44 +117,53 @@ export function DetectionResults({
   const meterRisk = strongestRisk(summary);
   const meterWidth = riskPercent(summary);
   const categories = categoryCounts(findings);
+  const currentStatus = statusCopy(summary);
 
   return (
     <div className="space-y-5">
-      <div>
-        <div className="mb-3 flex items-center justify-between gap-4">
+      <div className="rounded-card border border-line bg-white p-4 shadow-soft">
+        <div className="mb-4 flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-bold text-muted">リスクメーター</p>
-            <h3 className="text-xl font-black text-ink">検出結果</h3>
+            <p className="text-xs font-black text-muted">リスクサマリー</p>
+            <h3 className="mt-1 text-xl font-black text-ink">検出結果</h3>
           </div>
           <div className="rounded-card bg-ink px-3 py-2 text-sm font-black text-white">{summary.total}件</div>
+        </div>
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <p className="text-sm font-black text-ink">{currentStatus.label}</p>
+          <p className="text-xs font-bold text-muted">{meterWidth}%</p>
         </div>
         <div className="h-3 overflow-hidden rounded-full bg-cloud">
           <div className={`h-full rounded-full ${riskMeterTone[meterRisk]}`} style={{ width: `${meterWidth}%` }} />
         </div>
-        <div className="mt-3 grid grid-cols-3 gap-2">
+        <p className="mt-3 text-sm leading-6 text-muted">{currentStatus.text}</p>
+        <div className="mt-4 grid grid-cols-3 gap-2">
           <div className="rounded-card bg-rose-50 p-3">
-            <p className="text-xs font-bold text-rose-700">高</p>
-            <p className="text-2xl font-black text-rose-800">{summary.high}</p>
+            <p className="text-xs font-black text-rose-700">高</p>
+            <p className="text-2xl font-black text-rose-800">{summary.high + summary.critical}</p>
           </div>
           <div className="rounded-card bg-amber-50 p-3">
-            <p className="text-xs font-bold text-amber-800">中</p>
+            <p className="text-xs font-black text-amber-800">中</p>
             <p className="text-2xl font-black text-amber-900">{summary.medium}</p>
           </div>
-          <div className="rounded-card bg-slate-100 p-3">
-            <p className="text-xs font-bold text-slate-700">低</p>
-            <p className="text-2xl font-black text-slate-800">{summary.low}</p>
+          <div className="rounded-card bg-sky-50 p-3">
+            <p className="text-xs font-black text-sky-800">低</p>
+            <p className="text-2xl font-black text-sky-900">{summary.low}</p>
           </div>
         </div>
       </div>
 
-      <div>
-        <p className="mb-2 text-sm font-black text-ink">検出カテゴリ</p>
+      <div className="rounded-card border border-line bg-white p-4 shadow-soft">
+        <div className="mb-3 flex items-center gap-2">
+          <ListChecks size={17} className="text-leaf" aria-hidden="true" />
+          <p className="text-sm font-black text-ink">検出カテゴリ</p>
+        </div>
         {categories.length === 0 ? (
           <p className="rounded-card bg-cloud p-3 text-sm text-muted">まだ検出結果はありません。</p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {categories.map((category) => (
-              <span key={category.label} className="rounded-card border border-line bg-white/80 px-3 py-2 text-xs font-bold text-ink">
+              <span key={category.label} className="rounded-card border border-line bg-white px-3 py-2 text-xs font-black text-ink">
                 {category.label} {category.count}
               </span>
             ))}
@@ -140,16 +171,16 @@ export function DetectionResults({
         )}
       </div>
 
-      <div className="max-h-[360px] space-y-3 overflow-auto pr-1">
+      <div className="max-h-[430px] space-y-3 overflow-auto pr-1">
         {findings.length === 0 ? (
-          <p className="rounded-card border border-dashed border-line bg-white/60 p-4 text-sm text-muted">
+          <p className="rounded-card border border-dashed border-line bg-white/80 p-4 text-sm leading-6 text-muted">
             サンプルを挿入して、ルールベース検出またはAI文脈チェックを実行してください。
           </p>
         ) : (
           findings.map((finding) => {
             const checked = selectedFindingIds.includes(finding.id);
             return (
-              <label key={finding.id} className="block rounded-card border border-line bg-white/80 p-3">
+              <label key={finding.id} className="block rounded-card border border-line bg-white p-3 shadow-soft">
                 <div className="flex items-start gap-3">
                   <input
                     type="checkbox"
@@ -164,7 +195,9 @@ export function DetectionResults({
                       </span>
                       <span className="text-sm font-black text-ink">{finding.label}</span>
                       <span className="text-xs text-muted">{finding.source === "llm" ? "AI候補" : "ルール"}</span>
-                      <span className="text-xs font-bold text-leaf">{checked ? "マスク対象" : "対象外"}</span>
+                      <span className={`text-xs font-black ${checked ? "text-leaf" : "text-muted"}`}>
+                        {checked ? "マスク対象" : "対象外"}
+                      </span>
                     </div>
                     <p className="break-all rounded-[6px] bg-cloud px-2 py-1 font-mono text-sm text-ink">{finding.text}</p>
                     <p className="mt-2 text-xs leading-5 text-muted">{finding.message}</p>
@@ -182,7 +215,7 @@ export function DetectionResults({
             ? "border-rose-200 bg-rose-50 text-rose-800"
             : llmStatus === "done"
               ? "border-leaf/30 bg-emerald-50 text-emerald-900"
-              : "border-line bg-white/70 text-muted"
+              : "border-line bg-white text-muted"
         }`}
       >
         <div className="flex items-start gap-2">
@@ -200,7 +233,7 @@ export function DetectionResults({
       </div>
 
       <LlmCandidates candidates={llmCandidates} selectedCandidateIds={selectedCandidateIds} onToggle={onToggleCandidate} />
-      <div className="flex items-center gap-2 rounded-card bg-leaf/10 px-3 py-2 text-xs font-bold text-leaf">
+      <div className="flex items-center gap-2 rounded-card bg-leaf/10 px-3 py-2 text-xs font-black text-leaf">
         <Sparkles size={15} aria-hidden="true" />
         AI文脈チェックは候補表示です。安全を保証するものではありません。
       </div>

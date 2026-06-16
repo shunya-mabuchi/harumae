@@ -1,21 +1,31 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { createPasteReviewActionState } from "../src/lib/modal";
 
 describe("paste review modal UI", () => {
-  it("paste_guardモードでも、そのまま貼り付けと安全な依頼文生成を表示する", () => {
+  it("paste_guardモードでも主要アクションをフッターに表示する", () => {
     const modalSource = readFileSync(resolve(process.cwd(), "src/lib/modal.ts"), "utf8");
 
-    expect(modalSource).toContain("そのまま貼り付け");
+    expect(modalSource).toContain("footer.append(footerNote, maskButton, llmButton, safePromptButton, rawButton, cancelButton)");
     expect(modalSource).toContain("安全な依頼文に整える");
-    expect(modalSource).toContain("safePromptButton");
+    expect(modalSource).toContain("そのまま貼り付け");
   });
 
-  it("paste_guardモードではそのまま貼り付けを見せたうえで必要時に無効化する", () => {
-    const modalSource = readFileSync(resolve(process.cwd(), "src/lib/modal.ts"), "utf8");
+  it("安全化必須のときも、そのまま貼り付けを不可状態として見せる", () => {
+    const state = createPasteReviewActionState(false);
 
-    expect(modalSource).toContain("rawButton.toggleAttribute");
-    expect(modalSource).toContain("高リスクまたはSecret Guard対象のため、そのまま貼り付けはできません。");
+    expect(state.rawButtonText).toBe("そのまま貼り付け（不可）");
+    expect(state.rawButtonDisabled).toBe(true);
+    expect(state.footerNote).toBe("高リスクまたはSecret Guard対象のため、そのまま貼り付けはできません。");
+  });
+
+  it("そのまま貼り付け可能なときは通常ラベルで表示する", () => {
+    const state = createPasteReviewActionState(true);
+
+    expect(state.rawButtonText).toBe("そのまま貼り付け");
+    expect(state.rawButtonDisabled).toBe(false);
+    expect(state.footerNote).toBe("");
   });
 
   it("mediumリスクの貼り付けはpaste_guardではなく通常確認として扱う", () => {

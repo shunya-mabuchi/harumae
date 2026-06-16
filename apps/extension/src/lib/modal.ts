@@ -33,6 +33,24 @@ interface PasteReviewModalOptions {
   mode?: "default" | "paste_guard" | "context_check";
 }
 
+export interface PasteReviewActionState {
+  rawButtonText: string;
+  rawButtonDisabled: boolean;
+  rawButtonTitle: string;
+  footerNote: string;
+}
+
+const RAW_PASTE_BLOCKED_MESSAGE = "高リスクまたはSecret Guard対象のため、そのまま貼り付けはできません。";
+
+export function createPasteReviewActionState(rawPasteAllowed: boolean): PasteReviewActionState {
+  return {
+    rawButtonText: rawPasteAllowed ? "そのまま貼り付け" : "そのまま貼り付け（不可）",
+    rawButtonDisabled: !rawPasteAllowed,
+    rawButtonTitle: rawPasteAllowed ? "" : RAW_PASTE_BLOCKED_MESSAGE,
+    footerNote: rawPasteAllowed ? "" : RAW_PASTE_BLOCKED_MESSAGE
+  };
+}
+
 const riskLabel: Record<RiskLevel, string> = {
   critical: "重大",
   high: "高",
@@ -59,7 +77,9 @@ const css = `
   .hm-dialog {
     width: min(920px, 100%);
     max-height: min(780px, calc(100vh - 40px));
-    overflow: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
     border: 1px solid #dfded8;
     border-radius: 8px;
     background: #fbfaf7;
@@ -87,6 +107,8 @@ const css = `
     display: grid;
     gap: 16px;
     padding: 20px;
+    min-height: 0;
+    overflow: auto;
   }
   .hm-summary {
     display: grid;
@@ -208,9 +230,22 @@ const css = `
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
+    align-items: center;
+    flex-shrink: 0;
     gap: 10px;
     border-top: 1px solid #dfded8;
     background: white;
+    box-shadow: 0 -10px 28px rgba(32, 33, 36, 0.08);
+  }
+  .hm-footer-note {
+    flex: 1 0 100%;
+    margin: 0;
+    color: #b91c1c;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .hm-footer-note[hidden] {
+    display: none;
   }
   .hm-button {
     min-height: 40px;
@@ -225,6 +260,13 @@ const css = `
   }
   .hm-button:hover {
     background: #f5f5f4;
+  }
+  .hm-button:disabled {
+    opacity: 0.52;
+    cursor: not-allowed;
+  }
+  .hm-button:disabled:hover {
+    background: white;
   }
   .hm-primary {
     border-color: #2f7d57;
@@ -242,6 +284,9 @@ const css = `
   .hm-dark:hover {
     background: #343638;
   }
+  .hm-dark:disabled:hover {
+    background: #202124;
+  }
   @media (max-width: 720px) {
     .hm-grid {
       grid-template-columns: 1fr;
@@ -251,6 +296,8 @@ const css = `
     }
     .hm-footer {
       justify-content: stretch;
+      max-height: 44vh;
+      overflow: auto;
     }
     .hm-button {
       width: 100%;
@@ -423,18 +470,19 @@ export async function showPasteReviewModal(options: PasteReviewModalOptions): Pr
     body.append(llmPanel);
 
     const footer = createElement("footer", "hm-footer");
+    const footerNote = createElement("p", "hm-footer-note");
     const maskButton = createElement("button", "hm-button hm-primary", isPasteGuard ? "安全化して貼り付け" : "マスクして入力");
     const llmButton = createElement("button", "hm-button hm-dark", "AI文脈チェックも実行");
     const safePromptButton = createElement("button", "hm-button hm-dark", "安全な依頼文に整える");
     const rawButton = createElement("button", "hm-button", "そのまま貼り付け");
     const cancelButton = createElement("button", "hm-button", "キャンセル");
     if (isPasteGuard) {
-      footer.append(maskButton, llmButton, safePromptButton, rawButton, cancelButton);
+      footer.append(footerNote, maskButton, llmButton, safePromptButton, rawButton, cancelButton);
     } else if (isContextCheck) {
       maskButton.textContent = "候補をマスクして入力";
-      footer.append(maskButton, llmButton, safePromptButton, rawButton, cancelButton);
+      footer.append(footerNote, maskButton, llmButton, safePromptButton, rawButton, cancelButton);
     } else {
-      footer.append(maskButton, llmButton, safePromptButton, rawButton, cancelButton);
+      footer.append(footerNote, maskButton, llmButton, safePromptButton, rawButton, cancelButton);
     }
 
     dialog.append(header, body, footer);
@@ -461,8 +509,12 @@ export async function showPasteReviewModal(options: PasteReviewModalOptions): Pr
       if (isContextCheck) {
         maskButton.toggleAttribute("disabled", findings.length === 0);
       }
-      rawButton.toggleAttribute("disabled", !rawPasteAllowed);
-      rawButton.title = rawPasteAllowed ? "" : "高リスクまたはSecret Guard対象のため、そのまま貼り付けはできません。";
+      const actionState = createPasteReviewActionState(rawPasteAllowed);
+      rawButton.textContent = actionState.rawButtonText;
+      rawButton.toggleAttribute("disabled", actionState.rawButtonDisabled);
+      rawButton.title = actionState.rawButtonTitle;
+      footerNote.textContent = actionState.footerNote;
+      footerNote.hidden = actionState.footerNote.length === 0;
     };
 
     const cleanup = () => {
@@ -572,7 +624,7 @@ export async function showPasteReviewModal(options: PasteReviewModalOptions): Pr
 
     rawButton.addEventListener("click", () => {
       if (!rawPasteAllowed) {
-        llmStatus.textContent = "高リスクまたはSecret Guard対象のため、そのまま貼り付けはできません。";
+        llmStatus.textContent = RAW_PASTE_BLOCKED_MESSAGE;
         return;
       }
       cleanup();
