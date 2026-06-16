@@ -161,7 +161,7 @@ export function OptionsApp() {
               <p className="text-sm font-semibold text-ink">WebLLMモデル</p>
               <p className="mt-2 rounded-md border border-line bg-paper px-3 py-2 font-mono text-sm text-ink">{DEFAULT_MODEL_ID}</p>
               <p className="mt-2 text-sm leading-6 text-stone-600">
-                AIまえチェックでは、低負荷で起動しやすいSmolLM2 360M q4f32のみを利用します。文脈候補は補助扱いで、ルールベース検出を主軸にします。
+                AIまえチェックでは、動作実績を優先してLlama 3.2 1B q4f32を標準にします。利用環境で標準モデルが見つからない場合は、WebLLMのprebuilt一覧から軽量なInstruct/Chatモデルへ切り替えます。
               </p>
             </div>
 
