@@ -1,6 +1,6 @@
 import { defineContentScript } from "wxt/utils/define-content-script";
 import { detectSensitiveText, evaluateDlpPolicy, type DetectionResult } from "@ai-mae-check/core";
-import { createLlmContextAnalyzer, isWebGpuAvailable, WEBGPU_UNAVAILABLE_MESSAGE } from "@ai-mae-check/llm";
+import { classifyLlmError } from "@ai-mae-check/llm";
 import { adapterForHostname } from "../src/content/adapters";
 import { shouldOfferContextCheck } from "../src/content/dom/contextHints";
 import { installFileInterceptor } from "../src/content/dom/fileInterceptor";
@@ -9,7 +9,7 @@ import { installSendInterceptor } from "../src/content/dom/sendInterceptor";
 import { readEditableText } from "../src/content/dom/editorLocator";
 import { captureCurrentRange, findEditableTarget, insertTextAtTarget, type EditableTarget } from "../src/lib/dom";
 import { DEFAULT_SETTINGS, disabledRuleIds, isSiteEnabled, loadSettings, normalizeSettings, SETTINGS_KEY, type AiMaeCheckSettings } from "../src/lib/settings";
-import { getLlmWorkerUrl } from "../src/lib/llmWorkerUrl";
+import { analyzeSanitizeWithBridge } from "../src/lib/llmBridgeClient";
 import { targetMatches } from "../src/lib/sites";
 import { showPasteReviewModal } from "../src/lib/modal";
 import { showSendConfirmModal, type MinimizeResult, type SendConfirmModalOptions } from "../src/ui/confirmModal";
@@ -153,20 +153,9 @@ function createMinimizeRunner(
   }
 
   return async (onProgress) => {
-    if (!isWebGpuAvailable()) {
-      return {
-        blocked: true,
-        error: WEBGPU_UNAVAILABLE_MESSAGE
-      };
-    }
-
-    const analyzer = createLlmContextAnalyzer({
-      modelId: settings.llm.modelId,
-      workerUrl: await getLlmWorkerUrl()
-    });
-
     try {
-      const result = await analyzer.analyzeSanitize(inputText, {
+      const result = await analyzeSanitizeWithBridge(inputText, {
+        modelId: settings.llm.modelId,
         existingFindings: detection.findings,
         mode: "minimize",
         onProgress: (progress) => {
@@ -192,8 +181,12 @@ function createMinimizeRunner(
         text: result.safePrompt,
         message: result.userVisibleExplanation
       };
-    } finally {
-      analyzer.dispose();
+    } catch (error) {
+      const detail = classifyLlmError(error);
+      return {
+        blocked: true,
+        error: detail.message
+      };
     }
   };
 }

@@ -34,12 +34,13 @@ export default defineConfig({
     },
     web_accessible_resources: [
       {
-        resources: ["llm-worker.js"],
+        resources: ["llm-worker.js", "llm-bridge.html"],
         matches: targetMatches
       }
     ],
     content_security_policy: {
-      extension_pages: "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; worker-src 'self'"
+      extension_pages:
+        "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; worker-src 'self'; connect-src 'self' https://huggingface.co https://*.huggingface.co https://hf.co https://*.hf.co https://raw.githubusercontent.com https://*.githubusercontent.com https://*.xethub.hf.co https://cdn-lfs.huggingface.co"
     }
   }
 });
