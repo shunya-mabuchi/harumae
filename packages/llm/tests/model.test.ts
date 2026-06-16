@@ -1,34 +1,40 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_MODEL_ID, resolveModelId } from "../src";
+import {
+  COMPATIBLE_LIGHTWEIGHT_MODEL_ID,
+  DEFAULT_MODEL_ID,
+  LEGACY_LIGHTWEIGHT_MODEL_ID,
+  LOW_VRAM_MODEL_ID,
+  resolveModelId
+} from "../src";
 
 describe("resolveModelId", () => {
-  it("legacy f16指定も正式対応モデルへ正規化する", () => {
+  it("legacy f16指定をq4f32互換モデルへ正規化する", () => {
     const modelId = resolveModelId(
       {
         prebuiltAppConfig: {
-          model_list: [{ model_id: DEFAULT_MODEL_ID }]
+          model_list: [{ model_id: COMPATIBLE_LIGHTWEIGHT_MODEL_ID }]
         }
       },
-      "Llama-3.2-1B-Instruct-q4f16_1-MLC"
+      LEGACY_LIGHTWEIGHT_MODEL_ID
     );
 
-    expect(modelId).toBe(DEFAULT_MODEL_ID);
+    expect(modelId).toBe(COMPATIBLE_LIGHTWEIGHT_MODEL_ID);
   });
 
-  it("古い保存設定や手動指定が残っていても正式対応モデルへ正規化する", () => {
+  it("標準モデルがない場合は低VRAMモデルへfallbackする", () => {
     const modelId = resolveModelId(
       {
         prebuiltAppConfig: {
-          model_list: [{ model_id: DEFAULT_MODEL_ID }]
+          model_list: [{ model_id: LOW_VRAM_MODEL_ID, vram_required_MB: 579.61 }]
         }
       },
-      "gemma-2-2b-jpn-it-q4f32_1-MLC"
+      DEFAULT_MODEL_ID
     );
 
-    expect(modelId).toBe(DEFAULT_MODEL_ID);
+    expect(modelId).toBe(LOW_VRAM_MODEL_ID);
   });
 
-  it("prebuilt一覧に正式対応モデルがない場合も未知の代替モデルへは切り替えない", () => {
+  it("prebuilt一覧に標準モデルがない場合は最も軽いInstruct/Chatモデルへfallbackする", () => {
     const modelId = resolveModelId(
       {
         prebuiltAppConfig: {
@@ -41,6 +47,6 @@ describe("resolveModelId", () => {
       "missing-model"
     );
 
-    expect(modelId).toBe(DEFAULT_MODEL_ID);
+    expect(modelId).toBe("Small-Chat-q4f32_1-MLC");
   });
 });

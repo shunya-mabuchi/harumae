@@ -7,15 +7,15 @@ describe("settings", () => {
     expect(DEFAULT_SETTINGS.llm.modelId).toBe(DEFAULT_MODEL_ID);
   });
 
-  it("保存済みの古いモデルIDは正式対応モデルへ正規化する", () => {
+  it("保存済みのモデルIDは保持し、実行時のresolveModelIdでfallbackできるようにする", () => {
     const settings = normalizeSettings({
       llm: {
         enabled: true,
-        modelId: "Llama-3.2-1B-Instruct-q4f32_1-MLC",
+        modelId: "SmolLM2-360M-Instruct-q4f32_1-MLC",
         mode: "manual"
       }
     });
 
-    expect(settings.llm.modelId).toBe(DEFAULT_MODEL_ID);
+    expect(settings.llm.modelId).toBe("SmolLM2-360M-Instruct-q4f32_1-MLC");
   });
 });
