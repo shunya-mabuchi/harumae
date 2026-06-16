@@ -12,19 +12,21 @@ export function Button({
   children,
   onClick,
   variant = "primary",
-  disabled = false
+  disabled = false,
+  className = ""
 }: {
   children: ReactNode;
   onClick?: () => void;
   variant?: ButtonVariant;
   disabled?: boolean;
+  className?: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-card border px-4 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-55 ${buttonClassByVariant[variant]}`}
+      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-card border px-4 py-2 text-sm font-semibold tracking-normal transition disabled:cursor-not-allowed disabled:opacity-55 ${buttonClassByVariant[variant]} ${className}`}
     >
       {children}
     </button>
@@ -43,12 +45,12 @@ export function SectionHeading({
   return (
     <div className="mx-auto mb-8 max-w-3xl text-center">
       <p className="mb-3 text-sm font-bold text-leaf">{eyebrow}</p>
-      <h2 className="text-3xl font-bold leading-tight tracking-normal text-ink md:text-4xl">{title}</h2>
+      <h2 className="text-3xl font-black leading-tight tracking-normal text-ink md:text-4xl">{title}</h2>
       {description && <p className="mt-4 text-base leading-7 text-muted md:text-lg">{description}</p>}
     </div>
   );
 }
 
 export function Surface({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`rounded-card border border-line bg-surface shadow-soft ${className}`}>{children}</div>;
+  return <div className={`rounded-card border border-line bg-white/90 shadow-soft ${className}`}>{children}</div>;
 }

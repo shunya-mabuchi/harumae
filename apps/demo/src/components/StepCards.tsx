@@ -36,7 +36,7 @@ const steps = [
 
 export function StepCards() {
   return (
-    <section className="px-5 py-16 md:py-20">
+    <section className="px-5 py-16 md:py-24">
       <div className="mx-auto max-w-7xl">
         <SectionHeading
           eyebrow="仕組み"
@@ -47,7 +47,8 @@ export function StepCards() {
           {steps.map((step) => {
             const Icon = step.icon;
             return (
-              <Surface key={step.title} className="p-4">
+              <Surface key={step.title} className="relative overflow-hidden p-4">
+                <div className="absolute left-0 top-0 h-1 w-full bg-leaf/40" />
                 <p className="mb-3 text-xs font-black text-leaf">{step.label}</p>
                 <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-card bg-cloud text-ink">
                   <Icon size={20} aria-hidden="true" />

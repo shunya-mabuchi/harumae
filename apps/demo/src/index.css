@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  color: #202124;
-  background: #f7f4ed;
+  color: #171a1f;
+  background: #f4f7f1;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -18,7 +18,7 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  background: #f7f4ed;
+  background: #f4f7f1;
 }
 
 button,
@@ -39,24 +39,24 @@ span::selection {
 
 .bg-page-texture {
   background:
-    linear-gradient(135deg, rgba(47, 125, 87, 0.11), rgba(247, 244, 237, 0) 44%),
-    linear-gradient(180deg, rgba(255, 253, 248, 0.98), rgba(238, 235, 227, 0.92)),
-    #f7f4ed;
+    linear-gradient(120deg, rgba(36, 122, 91, 0.12), rgba(40, 87, 163, 0.06) 46%, rgba(244, 247, 241, 0) 72%),
+    linear-gradient(180deg, rgba(255, 255, 251, 0.98), rgba(239, 244, 239, 0.96)),
+    #f4f7f1;
 }
 
 .bg-page-texture::after {
   position: absolute;
   inset: 0;
   content: "";
-  opacity: 0.08;
+  opacity: 0.06;
   background-image:
-    repeating-linear-gradient(0deg, rgba(32, 33, 36, 0.14) 0, rgba(32, 33, 36, 0.14) 1px, transparent 1px, transparent 5px),
-    repeating-linear-gradient(90deg, rgba(47, 125, 87, 0.12) 0, rgba(47, 125, 87, 0.12) 1px, transparent 1px, transparent 7px);
+    repeating-linear-gradient(0deg, rgba(23, 26, 31, 0.12) 0, rgba(23, 26, 31, 0.12) 1px, transparent 1px, transparent 6px),
+    repeating-linear-gradient(90deg, rgba(36, 122, 91, 0.12) 0, rgba(36, 122, 91, 0.12) 1px, transparent 1px, transparent 8px);
   pointer-events: none;
 }
 
 .page-shell {
   background:
-    repeating-linear-gradient(0deg, rgba(32, 33, 36, 0.018) 0, rgba(32, 33, 36, 0.018) 1px, transparent 1px, transparent 9px),
-    linear-gradient(180deg, #fffdf8 0%, #f7f4ed 42%, #f3efe6 100%);
+    repeating-linear-gradient(0deg, rgba(23, 26, 31, 0.018) 0, rgba(23, 26, 31, 0.018) 1px, transparent 1px, transparent 9px),
+    linear-gradient(180deg, #fffffb 0%, #f4f7f1 44%, #eef3ed 100%);
 }
