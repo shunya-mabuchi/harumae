@@ -121,7 +121,8 @@ async function ensureWebGpuAdapter(): Promise<LlmErrorDetail | null> {
   try {
     const adapter = await (navigator as NavigatorWithGpu).gpu?.requestAdapter({ powerPreference: "high-performance" });
     if (!adapter) {
-      return classifyLlmError(new Error("No available WebGPU adapters"));
+      // iframe側の事前チェックだけで失敗しても、Worker側では取得できる場合があるためWebLLM本体に任せます。
+      return null;
     }
   } catch (error) {
     return classifyLlmError(error);
