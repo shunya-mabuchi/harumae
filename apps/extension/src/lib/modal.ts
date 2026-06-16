@@ -9,14 +9,12 @@ import {
 import {
   classifyLlmError,
   convertContextCandidatesToFindings,
-  createLlmContextAnalyzer,
-  isWebGpuAvailable,
   type ContextRiskCandidate,
   type LlmErrorDetail,
   type LlmProgress
 } from "@ai-mae-check/llm";
 import type { AiMaeCheckSettings } from "./settings";
-import { getLlmWorkerUrl } from "./llmWorkerUrl";
+import { analyzeContextWithBridge } from "./llmBridgeClient";
 
 type ModalDecision =
   | {
@@ -473,23 +471,12 @@ export async function showPasteReviewModal(options: PasteReviewModalOptions): Pr
         return;
       }
 
-      if (!isWebGpuAvailable()) {
-        llmStatus.textContent =
-          "このブラウザまたは端末ではAI文脈チェックを利用できません。ルールベースの検出は引き続き利用できます。";
-        return;
-      }
-
       llmButton.setAttribute("disabled", "true");
       llmStatus.textContent = "ローカルAIモデルを準備しています。初回のみ時間がかかる場合があります。";
-      let analyzer: ReturnType<typeof createLlmContextAnalyzer> | null = null;
 
       try {
-        analyzer = createLlmContextAnalyzer({
+        const result = await analyzeContextWithBridge(options.inputText, {
           modelId: options.settings.llm.modelId,
-          workerUrl: await getLlmWorkerUrl()
-        });
-
-        const result = await analyzer.analyze(options.inputText, {
           existingFindings: options.detection.findings,
           onProgress: (progress: LlmProgress) => {
             llmStatus.textContent = progress.message;
@@ -518,7 +505,6 @@ export async function showPasteReviewModal(options: PasteReviewModalOptions): Pr
         const detail = classifyLlmError(error);
         llmStatus.textContent = formatLlmStatusMessage(detail.message, detail);
       } finally {
-        analyzer?.dispose();
         llmButton.removeAttribute("disabled");
       }
     };
