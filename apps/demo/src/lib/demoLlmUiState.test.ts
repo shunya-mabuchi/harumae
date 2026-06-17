@@ -102,7 +102,7 @@ describe("demoLlmUiState", () => {
     expect(isContextAnalysisExecutionError(result)).toBe(false);
     expect(createLlmResultUiState(result.candidates.length, result.errorDetail)).toEqual({
       status: "empty",
-      message: "AI文脈チェックの出力形式は読み取れませんでした。ルールベース検出結果は維持されています。必要なら再実行してください。",
+      message: "ルールベース検出結果で安全化できます。AI文脈チェックは必要に応じて再実行してください。",
       errorDetail: null
     });
   });

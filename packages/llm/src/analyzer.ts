@@ -72,10 +72,10 @@ type NavigatorWithGpu = Navigator & {
 };
 
 const UNREADABLE_OUTPUT_SUMMARY =
-  "AI文脈チェックの出力形式は読み取れませんでした。ルールベース検出結果は維持されています。必要なら再実行してください。";
+  "ルールベース検出結果で安全化できます。AI文脈チェックは必要に応じて再実行してください。";
 
 const UNREADABLE_OUTPUT_WITH_FALLBACK_SUMMARY =
-  "AI文脈チェックの出力形式は読み取れませんでしたが、ブラウザ内の補助検出で注意候補を確認しました。";
+  "ブラウザ内の補助検出で注意候補を確認しました。安全化対象を選んで続行できます。";
 
 type NormalizedLlmAnalyzerOptions = Required<Omit<LlmAnalyzerOptions, "workerUrl">> & {
   workerUrl?: string;
