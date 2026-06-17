@@ -6,6 +6,7 @@ const manifestPath = resolve(rootDir, "apps/extension/.output/chrome-mv3/manifes
 const outputDir = resolve(rootDir, "apps/extension/.output");
 const listingPath = resolve(rootDir, "docs/chrome-web-store-listing.json");
 const assetManifestPath = resolve(rootDir, "docs/chrome-web-store-assets.json");
+const submissionCopyPath = resolve(rootDir, "docs/chrome-web-store-submission-copy.md");
 const privacyPolicyPath = resolve(rootDir, "docs/privacy-policy.md");
 const maxZipBytes = 2 * 1024 * 1024 * 1024;
 
@@ -100,6 +101,10 @@ if (!existsSync(assetManifestPath)) {
   fail("docs/chrome-web-store-assets.json is missing");
 }
 
+if (!existsSync(submissionCopyPath)) {
+  fail("docs/chrome-web-store-submission-copy.md is missing");
+}
+
 if (!existsSync(privacyPolicyPath)) {
   fail("docs/privacy-policy.md is missing");
 }
@@ -107,6 +112,7 @@ if (!existsSync(privacyPolicyPath)) {
 const manifest = readJson(manifestPath);
 const assetManifest = readJson(assetManifestPath);
 const listingText = readFileSync(listingPath, "utf8");
+const submissionCopyText = readFileSync(submissionCopyPath, "utf8");
 const listing = JSON.parse(listingText);
 
 for (const phrase of forbiddenPhrases) {
@@ -182,6 +188,22 @@ if (!listing.dataUsage?.explanation?.includes("本文")) {
 
 if (!Array.isArray(listing.testInstructions) || listing.testInstructions.length !== 6) {
   fail("testInstructions must contain 6 reviewer steps");
+}
+
+for (const requiredCopy of [
+  "# Chrome Web Store 掲載文 最終版",
+  listing.name,
+  listing.shortDescription,
+  listing.supportUrl,
+  listing.privacyPolicyUrl,
+  listing.permissionJustifications.storage,
+  listing.permissionJustifications.host_permissions,
+  listing.remoteCode.explanation,
+  listing.dataUsage.explanation
+]) {
+  if (!submissionCopyText.includes(requiredCopy)) {
+    fail(`submission copy must include: ${requiredCopy}`);
+  }
 }
 
 assertAsset(assetManifest.storeIcon, "storeIcon");
