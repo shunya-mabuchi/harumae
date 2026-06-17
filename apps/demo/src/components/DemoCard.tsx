@@ -1,7 +1,12 @@
-import { Clipboard, RefreshCcw, ShieldCheck, Sparkles, Wand2 } from "lucide-react";
+import { Clipboard, RefreshCcw, ShieldCheck, Sparkles, Wand2, type LucideIcon } from "lucide-react";
 import type { DetectionResult, DetectionSummary, Finding } from "@ai-mae-check/core";
 import type { ContextRiskCandidate, LlmErrorDetail } from "@ai-mae-check/llm";
 import type { LlmStatus } from "../lib/demoConstants";
+import {
+  createDemoWorkbenchActions,
+  type DemoWorkbenchActionIcon,
+  type DemoWorkbenchActionId
+} from "../lib/demoWorkbenchActions";
 import { Button, Surface } from "./ui";
 import { DetectionResults } from "./DetectionResults";
 import { MaskResult } from "./MaskResult";
@@ -11,6 +16,14 @@ const workflowSteps = [
   { label: "2", title: "検出結果を確認", text: "チェックを外すと出力も変わる" },
   { label: "3", title: "マスクして使う", text: "送る前の文章だけをコピー" }
 ];
+
+const actionIcons: Record<DemoWorkbenchActionIcon, LucideIcon> = {
+  clipboard: Clipboard,
+  sparkles: Sparkles,
+  shield_check: ShieldCheck,
+  wand: Wand2,
+  refresh: RefreshCcw
+};
 
 export function DemoCard({
   text,
@@ -56,6 +69,18 @@ export function DemoCard({
   copyMessage: string;
 }) {
   const findings: Finding[] = detection?.findings ?? [];
+  const actionHandlers: Record<DemoWorkbenchActionId, () => void> = {
+    sample_rules: onInsertSample,
+    sample_context: onInsertContextSample,
+    detect_rules: onRuleDetection,
+    check_context: onLlmDetection,
+    copy_masked: onCopyMaskedText,
+    reset: onReset
+  };
+  const actions = createDemoWorkbenchActions({
+    llmStatus,
+    hasMaskedText: maskedText.length > 0
+  });
 
   return (
     <section id="demo" className="px-5 py-16 md:py-24">
@@ -90,30 +115,21 @@ export function DemoCard({
                 <h3 className="mt-1 text-xl font-black tracking-normal">入力からマスク結果まで、同じ画面で確認</h3>
               </div>
               <div className="grid gap-2 sm:grid-cols-2 lg:flex lg:flex-wrap xl:justify-end">
-                <Button onClick={onInsertSample} variant="ghost" className="w-full border-white/20 bg-white/10 text-white hover:bg-white/15 lg:w-auto">
-                  <Clipboard size={17} aria-hidden="true" />
-                  ルール用サンプル
-                </Button>
-                <Button onClick={onInsertContextSample} variant="ghost" className="w-full border-white/20 bg-white/10 text-white hover:bg-white/15 lg:w-auto">
-                  <Sparkles size={17} aria-hidden="true" />
-                  文脈用サンプル
-                </Button>
-                <Button onClick={onRuleDetection} variant="secondary" className="w-full lg:w-auto">
-                  <ShieldCheck size={17} aria-hidden="true" />
-                  検出する
-                </Button>
-                <Button onClick={onLlmDetection} variant="ghost" disabled={llmStatus === "loading" || llmStatus === "analyzing"} className="w-full border-white/20 bg-white text-ink hover:bg-cloud lg:w-auto">
-                  <Sparkles size={17} aria-hidden="true" />
-                  AI文脈チェック
-                </Button>
-                <Button onClick={onCopyMaskedText} variant="ghost" disabled={!maskedText} className="w-full border-white/20 bg-white/10 text-white hover:bg-white/15 lg:w-auto">
-                  <Wand2 size={17} aria-hidden="true" />
-                  コピー
-                </Button>
-                <Button onClick={onReset} variant="ghost" className="w-full border-white/20 bg-white/10 text-white hover:bg-white/15 lg:w-auto">
-                  <RefreshCcw size={17} aria-hidden="true" />
-                  リセット
-                </Button>
+                {actions.map((action) => {
+                  const Icon = actionIcons[action.icon];
+                  return (
+                    <Button
+                      key={action.id}
+                      onClick={actionHandlers[action.id]}
+                      variant={action.variant}
+                      disabled={action.disabled}
+                      className={action.className}
+                    >
+                      <Icon size={17} aria-hidden="true" />
+                      {action.label}
+                    </Button>
+                  );
+                })}
               </div>
             </div>
           </div>
