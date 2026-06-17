@@ -1,14 +1,12 @@
 import {
   evaluateDlpPolicy,
   maskSensitiveText,
-  mergeFindings,
   transformText,
   type DetectionResult,
   type Finding
 } from "@ai-mae-check/core";
 import {
   classifyLlmError,
-  convertContextCandidatesToFindings,
   type ContextRiskCandidate,
   type LlmErrorDetail,
   type LlmProgress
@@ -19,6 +17,11 @@ import {
   pasteReviewRiskLabel,
   RAW_PASTE_BLOCKED_MESSAGE
 } from "./pasteReviewState";
+import {
+  createInitialSelectedCandidateIds,
+  createInitialSelectedFindingIds,
+  resolvePasteReviewFindings
+} from "./pasteReviewSelection";
 import type { AiMaeCheckSettings } from "./settings";
 import { analyzeContextWithBridge } from "./llmBridgeClient";
 
@@ -223,14 +226,17 @@ export async function showPasteReviewModal(options: PasteReviewModalOptions): Pr
     document.documentElement.append(host);
 
     let llmCandidates: ContextRiskCandidate[] = [];
-    const selectedRuleFindingIds = new Set(options.detection.findings.map((finding) => finding.id));
+    const selectedRuleFindingIds = createInitialSelectedFindingIds(options.detection.findings);
     const selectedCandidateIds = new Set<string>();
 
     const currentFindings = () => {
-      const selectedRuleFindings = options.detection.findings.filter((finding) => selectedRuleFindingIds.has(finding.id));
-      const selectedCandidates = llmCandidates.filter((candidate) => selectedCandidateIds.has(candidate.id));
-      const llmFindings = convertContextCandidatesToFindings(options.inputText, selectedCandidates);
-      return mergeFindings(selectedRuleFindings, llmFindings);
+      return resolvePasteReviewFindings({
+        input: options.inputText,
+        ruleFindings: options.detection.findings,
+        selectedRuleFindingIds,
+        candidates: llmCandidates,
+        selectedCandidateIds
+      });
     };
 
     const renderAfterSelectionChange = () => {
@@ -282,10 +288,8 @@ export async function showPasteReviewModal(options: PasteReviewModalOptions): Pr
 
         llmCandidates = result.candidates;
         selectedCandidateIds.clear();
-        for (const candidate of result.candidates) {
-          if (candidate.confidence >= 0.75) {
-            selectedCandidateIds.add(candidate.id);
-          }
+        for (const candidateId of createInitialSelectedCandidateIds(result.candidates)) {
+          selectedCandidateIds.add(candidateId);
         }
 
         llmStatus.textContent =
