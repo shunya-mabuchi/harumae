@@ -6,10 +6,9 @@ import {
 } from "@ai-mae-check/core";
 import {
   convertContextCandidatesToFindings,
+  selectContextCandidateIdsByConfidence,
   type ContextRiskCandidate
 } from "@ai-mae-check/llm";
-
-const DEFAULT_SELECTED_CANDIDATE_CONFIDENCE = 0.75;
 
 export interface DemoMaskingOptions {
   inputText: string;
@@ -28,9 +27,9 @@ export interface DemoMaskingViewModel {
 
 export function selectCandidateIdsByConfidence(
   candidates: ContextRiskCandidate[],
-  minConfidence = DEFAULT_SELECTED_CANDIDATE_CONFIDENCE
+  minConfidence?: number
 ): string[] {
-  return candidates.filter((candidate) => candidate.confidence >= minConfidence).map((candidate) => candidate.id);
+  return selectContextCandidateIdsByConfidence(candidates, minConfidence);
 }
 
 export function createDemoMaskingViewModel(options: DemoMaskingOptions): DemoMaskingViewModel {
