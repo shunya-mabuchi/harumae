@@ -21,6 +21,7 @@ import {
   createInitialSelectedFindingIds,
   resolvePasteReviewFindings
 } from "./pasteReviewSelection";
+import { createPasteReviewSummaryItems } from "./pasteReviewSummaryView";
 import {
   createPasteReviewLlmCompleteMessage,
   formatPasteReviewLlmStatusMessage,
@@ -162,10 +163,9 @@ export async function showPasteReviewModal(options: PasteReviewModalOptions): Pr
     const rawPasteAllowed = !policy.requiresSanitization;
     const body = createElement("div", "hm-body");
     const summary = createElement("div", "hm-summary");
-    summary.append(createElement("div", "hm-count hm-critical", `重大リスク件数\n${options.detection.summary.critical}`));
-    summary.append(createElement("div", "hm-count hm-high", `高リスク件数\n${options.detection.summary.high}`));
-    summary.append(createElement("div", "hm-count hm-medium", `中リスク件数\n${options.detection.summary.medium}`));
-    summary.append(createElement("div", "hm-count hm-low", `低リスク件数\n${options.detection.summary.low}`));
+    for (const item of createPasteReviewSummaryItems(options.detection.summary)) {
+      summary.append(createElement("div", item.className, item.text));
+    }
 
     const grid = createElement("div", "hm-grid");
     const listPanel = createElement("div", "hm-panel");
