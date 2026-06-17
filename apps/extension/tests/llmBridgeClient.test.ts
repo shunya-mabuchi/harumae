@@ -20,7 +20,7 @@ describe("createBridgeErrorFallbackResult", () => {
 
     expect(result).not.toBeNull();
     expect(result?.error).toBeUndefined();
-    expect(result?.errorDetail).toBeUndefined();
+    expect(result?.errorDetail?.kind).toBe("json_parse");
     expect(result?.summary).toBe("ブラウザ内の補助検出で注意候補を確認しました。安全化対象を選んで続行できます。");
     expect(result?.candidates.map((candidate) => candidate.surface)).toContain("Project Blue Bridge");
     expect(result?.candidates.map((candidate) => candidate.surface)).toContain("山田花子さん");
@@ -41,6 +41,7 @@ describe("createBridgeErrorFallbackResult", () => {
 
     expect(result).not.toBeNull();
     expect(result?.error).toBeUndefined();
+    expect(result?.errorDetail?.kind).toBe("json_parse");
     expect(result?.summary).toBe("ブラウザ内の補助検出で注意候補を確認しました。安全化対象を選んで続行できます。");
     expect(result?.candidates.map((candidate) => candidate.surface)).toContain("Project Blue Bridge");
   });

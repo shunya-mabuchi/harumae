@@ -75,7 +75,7 @@ describe("WebGPU事前チェック", () => {
     const result = await analyzer.analyze("候補者の山田花子さんについて、最終面談後の評価メモも含めます。");
 
     expect(result.error).toBeUndefined();
-    expect(result.errorDetail).toBeUndefined();
+    expect(result.errorDetail?.kind).toBe("json_parse");
     expect(result.summary).toBe("ブラウザ内の補助検出で注意候補を確認しました。安全化対象を選んで続行できます。");
     expect(result.candidates.map((candidate) => candidate.surface)).toContain("山田花子さん");
   });
@@ -89,7 +89,7 @@ describe("WebGPU事前チェック", () => {
     const result = await analyzer.analyze("来週の定例会議の議事録を整理します。");
 
     expect(result.error).toBeUndefined();
-    expect(result.errorDetail).toBeUndefined();
+    expect(result.errorDetail?.kind).toBe("json_parse");
     expect(result.candidates).toEqual([]);
     expect(result.summary).toBe("ルールベース検出結果で安全化できます。AI文脈チェックは必要に応じて再実行してください。");
   });
