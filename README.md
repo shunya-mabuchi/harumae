@@ -246,6 +246,10 @@ pnpm typecheck
 
 `pnpm rules:keygen` は、ルール配信API用のECDSA P-256鍵ペアを生成します。署名方式とAPI仕様は [docs/rule-delivery.md](docs/rule-delivery.md) にまとめています。
 
+## CI
+
+GitHub Actionsで、PRと `main` 更新時に `pnpm install --frozen-lockfile`、`pnpm typecheck`、`pnpm test`、`pnpm build`、`pnpm package:extension`、`pnpm qa:extension:manifest`、`pnpm qa:chrome-store` を実行します。Chrome Web Store公開前の提出物チェックもPR上で見えるようにしています。
+
 ## Chrome拡張の読み込み方法
 
 1. `pnpm build:extension` を実行する
