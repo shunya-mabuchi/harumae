@@ -1,4 +1,4 @@
-import type { DetectionSummary, Finding, RiskLevel } from "@ai-mae-check/core";
+import { findingRiskLabels, type DetectionSummary, type Finding, type RiskLevel } from "@ai-mae-check/core";
 
 export interface RiskSummaryCategory {
   label: string;
@@ -15,6 +15,15 @@ export interface RiskSummaryViewModel {
   meterWidth: number;
   status: RiskSummaryStatus;
   categories: RiskSummaryCategory[];
+}
+
+export interface RiskCountTile {
+  key: "high" | "medium" | "low";
+  label: string;
+  count: number;
+  containerClassName: string;
+  labelClassName: string;
+  countClassName: string;
 }
 
 function riskPercent(summary: DetectionSummary): number {
@@ -60,6 +69,35 @@ function categoryCounts(findings: Finding[]): RiskSummaryCategory[] {
     counts.set(finding.label, (counts.get(finding.label) ?? 0) + 1);
   }
   return [...counts.entries()].map(([label, count]) => ({ label, count }));
+}
+
+export function createRiskCountTiles(summary: DetectionSummary): RiskCountTile[] {
+  return [
+    {
+      key: "high",
+      label: findingRiskLabels.high,
+      count: summary.high + summary.critical,
+      containerClassName: "rounded-card bg-rose-50 p-3",
+      labelClassName: "text-xs font-black text-rose-700",
+      countClassName: "text-2xl font-black text-rose-800"
+    },
+    {
+      key: "medium",
+      label: findingRiskLabels.medium,
+      count: summary.medium,
+      containerClassName: "rounded-card bg-amber-50 p-3",
+      labelClassName: "text-xs font-black text-amber-800",
+      countClassName: "text-2xl font-black text-amber-900"
+    },
+    {
+      key: "low",
+      label: findingRiskLabels.low,
+      count: summary.low,
+      containerClassName: "rounded-card bg-sky-50 p-3",
+      labelClassName: "text-xs font-black text-sky-800",
+      countClassName: "text-2xl font-black text-sky-900"
+    }
+  ];
 }
 
 export function createRiskSummaryViewModel(summary: DetectionSummary, findings: Finding[]): RiskSummaryViewModel {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { DetectionSummary, Finding } from "@ai-mae-check/core";
-import { createRiskSummaryViewModel } from "./demoRiskSummary";
+import { createRiskCountTiles, createRiskSummaryViewModel } from "./demoRiskSummary";
 
 const baseSummary: DetectionSummary = {
   total: 0,
@@ -56,6 +56,36 @@ describe("demoRiskSummary", () => {
     expect(viewModel.categories).toEqual([
       { label: "メールアドレス", count: 2 },
       { label: "日本の電話番号", count: 1 }
+    ]);
+  });
+  it("リスク件数タイルの表示情報をまとめて返す", () => {
+    const tiles = createRiskCountTiles({ ...baseSummary, critical: 1, high: 2, medium: 3, low: 4 });
+
+    expect(tiles).toEqual([
+      {
+        key: "high",
+        label: "高",
+        count: 3,
+        containerClassName: "rounded-card bg-rose-50 p-3",
+        labelClassName: "text-xs font-black text-rose-700",
+        countClassName: "text-2xl font-black text-rose-800"
+      },
+      {
+        key: "medium",
+        label: "中",
+        count: 3,
+        containerClassName: "rounded-card bg-amber-50 p-3",
+        labelClassName: "text-xs font-black text-amber-800",
+        countClassName: "text-2xl font-black text-amber-900"
+      },
+      {
+        key: "low",
+        label: "低",
+        count: 4,
+        containerClassName: "rounded-card bg-sky-50 p-3",
+        labelClassName: "text-xs font-black text-sky-800",
+        countClassName: "text-2xl font-black text-sky-900"
+      }
     ]);
   });
 });
