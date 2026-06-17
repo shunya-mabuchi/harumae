@@ -1,7 +1,5 @@
 import {
   evaluateDlpPolicy,
-  maskSensitiveText,
-  transformText,
   type DetectionResult,
   type Finding
 } from "@ai-mae-check/core";
@@ -23,6 +21,7 @@ import {
 import { createPasteReviewCandidateView } from "./pasteReviewCandidateView";
 import { createPasteReviewFindingView } from "./pasteReviewFindingView";
 import { createPasteReviewSummaryItems } from "./pasteReviewSummaryView";
+import { createPasteReviewInsertText, createPasteReviewPreviewText } from "./pasteReviewTextTransform";
 import {
   createPasteReviewLlmCompleteMessage,
   formatPasteReviewLlmStatusMessage,
@@ -233,7 +232,7 @@ export async function showPasteReviewModal(options: PasteReviewModalOptions): Pr
     const render = () => {
       const findings = currentFindings();
       renderFindingList(list, options.detection.findings, selectedRuleFindingIds, renderAfterSelectionChange);
-      preview.textContent = maskSensitiveText(options.inputText, findings).maskedText;
+      preview.textContent = createPasteReviewPreviewText(options.inputText, findings);
       renderCandidates(candidateList, llmCandidates, selectedCandidateIds, renderAfterSelectionChange);
       if (isContextCheck) {
         maskButton.toggleAttribute("disabled", findings.length === 0);
@@ -291,9 +290,7 @@ export async function showPasteReviewModal(options: PasteReviewModalOptions): Pr
 
     maskButton.addEventListener("click", () => {
       const findings = currentFindings();
-      const maskedText = isPasteGuard
-        ? transformText(options.inputText, findings, "generalize").transformedText
-        : maskSensitiveText(options.inputText, findings).maskedText;
+      const maskedText = createPasteReviewInsertText(options.inputText, findings, mode);
       cleanup();
       resolve({ type: "insert", text: maskedText });
     });
