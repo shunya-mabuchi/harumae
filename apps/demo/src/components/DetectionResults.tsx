@@ -1,8 +1,9 @@
 import { AlertTriangle, CheckCircle2, ListChecks, Sparkles } from "lucide-react";
 import type { DetectionSummary, Finding } from "@ai-mae-check/core";
 import type { ContextRiskCandidate, LlmErrorDetail } from "@ai-mae-check/llm";
-import { riskLabel, riskMeterTone, riskTone, type LlmStatus } from "../lib/demoConstants";
+import { riskMeterTone, type LlmStatus } from "../lib/demoConstants";
 import { createDemoFindingItemViewModel } from "../lib/demoFindingItem";
+import { createDemoLlmCandidateItemViewModel } from "../lib/demoLlmCandidateItem";
 import { createLlmStatusPanelViewModel } from "../lib/demoLlmUiState";
 import { createRiskCountTiles, createRiskSummaryViewModel } from "../lib/demoRiskSummary";
 
@@ -22,29 +23,31 @@ function LlmCandidates({
   return (
     <div className="space-y-3">
       <h4 className="text-sm font-black text-ink">AI文脈チェック結果</h4>
-      {candidates.map((candidate) => (
-        <label key={candidate.id} className="block rounded-card border border-line bg-white p-3 shadow-soft">
-          <div className="flex items-start gap-3">
-            <input
-              type="checkbox"
-              className="mt-1 h-4 w-4 accent-leaf"
-              checked={selectedCandidateIds.includes(candidate.id)}
-              onChange={() => onToggle(candidate.id)}
-            />
-            <div className="min-w-0 flex-1">
-              <div className="mb-2 flex flex-wrap items-center gap-2">
-                <span className="font-black text-ink">{candidate.label}</span>
-                <span className={`rounded-card border px-2 py-1 text-xs font-bold ${riskTone[candidate.riskLevel]}`}>
-                  危険度: {riskLabel[candidate.riskLevel]}
-                </span>
-                <span className="text-xs text-muted">信頼度: {candidate.confidence.toFixed(2)}</span>
+      {candidates.map((candidate) => {
+        const item = createDemoLlmCandidateItemViewModel(candidate, selectedCandidateIds.includes(candidate.id));
+
+        return (
+          <label key={item.id} className="block rounded-card border border-line bg-white p-3 shadow-soft">
+            <div className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                className="mt-1 h-4 w-4 accent-leaf"
+                checked={item.selected}
+                onChange={() => onToggle(item.id)}
+              />
+              <div className="min-w-0 flex-1">
+                <div className="mb-2 flex flex-wrap items-center gap-2">
+                  <span className="font-black text-ink">{item.label}</span>
+                  <span className={item.riskBadgeClassName}>{item.riskBadgeText}</span>
+                  <span className="text-xs text-muted">{item.confidenceText}</span>
+                </div>
+                <p className="break-all rounded-[6px] bg-cloud px-2 py-1 font-mono text-sm">{item.surface}</p>
+                <p className="mt-2 text-xs leading-5 text-muted">{item.reason}</p>
               </div>
-              <p className="break-all rounded-[6px] bg-cloud px-2 py-1 font-mono text-sm">{candidate.surface}</p>
-              <p className="mt-2 text-xs leading-5 text-muted">{candidate.reason}</p>
             </div>
-          </div>
-        </label>
-      ))}
+          </label>
+        );
+      })}
     </div>
   );
 }
