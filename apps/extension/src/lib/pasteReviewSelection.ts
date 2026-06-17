@@ -1,7 +1,12 @@
 import { mergeFindings, type Finding } from "@ai-mae-check/core";
-import { convertContextCandidatesToFindings, type ContextRiskCandidate } from "@ai-mae-check/llm";
+import {
+  convertContextCandidatesToFindings,
+  DEFAULT_SELECTED_CONTEXT_CANDIDATE_CONFIDENCE,
+  selectContextCandidateIdsByConfidence,
+  type ContextRiskCandidate
+} from "@ai-mae-check/llm";
 
-export const DEFAULT_SELECTED_CANDIDATE_CONFIDENCE = 0.75;
+export const DEFAULT_SELECTED_CANDIDATE_CONFIDENCE = DEFAULT_SELECTED_CONTEXT_CANDIDATE_CONFIDENCE;
 
 export interface ResolvePasteReviewFindingsOptions {
   input: string;
@@ -19,11 +24,7 @@ export function createInitialSelectedCandidateIds(
   candidates: ContextRiskCandidate[],
   confidenceThreshold = DEFAULT_SELECTED_CANDIDATE_CONFIDENCE
 ): Set<string> {
-  return new Set(
-    candidates
-      .filter((candidate) => candidate.confidence >= confidenceThreshold)
-      .map((candidate) => candidate.id)
-  );
+  return new Set(selectContextCandidateIdsByConfidence(candidates, confidenceThreshold));
 }
 
 export function updateSelectedIdSet(selectedIds: Set<string>, id: string, selected: boolean): void {

@@ -20,6 +20,10 @@ export {
 } from "./errors";
 export { getAvailableModelIds, resolveModelId } from "./model";
 export { parseContextAnalysisJson } from "./parser";
+export {
+  DEFAULT_SELECTED_CONTEXT_CANDIDATE_CONFIDENCE,
+  selectContextCandidateIdsByConfidence
+} from "./selection";
 export { extractResidualContextTerms, mergeResidualContextCandidates } from "./residualMasking";
 export { buildContextRiskPrompt } from "./prompt";
 export { isWebGpuAvailable } from "./webgpu";
