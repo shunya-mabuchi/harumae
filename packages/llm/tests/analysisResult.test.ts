@@ -42,7 +42,7 @@ describe("createContextAnalysisResultFromRawText", () => {
     });
 
     expect(result.error).toBeUndefined();
-    expect(result.errorDetail).toBeUndefined();
+    expect(result.errorDetail?.kind).toBe("json_parse");
     expect(result.summary).toBe("ブラウザ内の補助検出で注意候補を確認しました。安全化対象を選んで続行できます。");
     expect(result.candidates.map((candidate) => candidate.surface)).toEqual(["山田花子さん"]);
   });
@@ -55,6 +55,8 @@ describe("createContextAnalysisResultFromRawText", () => {
       elapsedMs: 10
     });
 
+    expect(result.error).toBeUndefined();
+    expect(result.errorDetail?.kind).toBe("json_parse");
     expect(result.candidates).toEqual([]);
     expect(result.summary).toBe("ルールベース検出結果で安全化できます。AI文脈チェックは必要に応じて再実行してください。");
   });

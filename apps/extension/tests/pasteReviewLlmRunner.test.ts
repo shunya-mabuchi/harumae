@@ -160,6 +160,60 @@ describe("runPasteReviewLlm", () => {
     expect(render).not.toHaveBeenCalled();
   });
 
+  it("JSON読み取り失敗の非致命結果は診断メモではなく続行メッセージとして表示する", async () => {
+    const result: ContextAnalysisResult = {
+      candidates: [
+        {
+          id: "local-context-person_name-1",
+          category: "person_name",
+          surface: "山田花子さん",
+          label: "人名候補",
+          reason: "採用や評価文脈に含まれる個人名候補です。",
+          riskLevel: "medium",
+          suggestedPlaceholder: "[PERSON_1]",
+          confidence: 0.82
+        }
+      ],
+      summary: "ブラウザ内の補助検出で注意候補を確認しました。安全化対象を選んで続行できます。",
+      rawText: "",
+      modelId: "test-model",
+      elapsedMs: 10,
+      errorDetail: {
+        kind: "json_parse",
+        message: "AI文脈チェックの結果を読み取れませんでした。",
+        hint: "ルールベース検出結果は維持されています。必要なら再実行してください。",
+        technicalDetail: "AI文脈チェックの結果を読み取れませんでした"
+      }
+    };
+    const analyze = vi.fn(async () => result);
+    const llmStatus = { textContent: "" };
+    const llmButton = new FakeButton();
+    const selectedCandidateIds = new Set<string>();
+    const setCandidates = vi.fn();
+    const render = vi.fn();
+
+    await runPasteReviewLlm({
+      enabled: true,
+      inputText: "候補者の山田花子さんについて確認します。",
+      modelId: "Llama-3.2-1B-Instruct-q4f32_1-MLC",
+      existingFindings: [],
+      llmStatus: llmStatus as HTMLElement,
+      llmButton: llmButton as unknown as HTMLButtonElement,
+      selectedCandidateIds,
+      setCandidates,
+      render,
+      analyze
+    });
+
+    expect(setCandidates).toHaveBeenCalledWith(result.candidates);
+    expect(Array.from(selectedCandidateIds)).toEqual(["local-context-person_name-1"]);
+    expect(llmStatus.textContent).toBe(
+      "ブラウザ内の補助検出で注意候補を確認しました。安全化対象を選んで続行できます。"
+    );
+    expect(llmStatus.textContent).not.toContain("診断メモ");
+    expect(render).toHaveBeenCalledTimes(1);
+  });
+
   it("JSON読み取り失敗でrejectされても補助候補を表示して続行できる状態にする", async () => {
     const analyze = vi.fn(async () => {
       throw new Error("AI文脈チェックの結果を読み取れませんでした");

@@ -30,6 +30,7 @@ export function createJsonParseBridgeFallbackResult(
     summary: createJsonParseFallbackMessage(candidates.length),
     rawText: "",
     modelId: options.modelId,
-    elapsedMs: Math.max(0, performance.now() - options.startedAt)
+    elapsedMs: Math.max(0, performance.now() - options.startedAt),
+    errorDetail
   };
 }

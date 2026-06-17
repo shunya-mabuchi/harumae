@@ -1,4 +1,4 @@
-import { createJsonParseFallbackMessage } from "./errors";
+import { classifyLlmError, createJsonParseFallbackMessage } from "./errors";
 import { parseContextAnalysisJson } from "./parser";
 import { mergeResidualContextCandidates } from "./residualMasking";
 import type { ContextAnalysisResult } from "./types";
@@ -33,13 +33,15 @@ export function createContextAnalysisResultFromRawText(
     };
   } catch {
     const candidates = mergeResidualContextCandidates(options.input, [], candidateLimitOptions);
+    const errorDetail = classifyLlmError(new Error("AI文脈チェックの結果を読み取れませんでした"));
 
     return {
       candidates,
       summary: createJsonParseFallbackMessage(candidates.length),
       rawText: options.rawText,
       modelId: options.modelId,
-      elapsedMs: options.elapsedMs
+      elapsedMs: options.elapsedMs,
+      errorDetail
     };
   }
 }
