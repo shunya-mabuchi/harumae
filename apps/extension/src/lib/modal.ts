@@ -11,9 +11,8 @@ import {
 } from "@ai-mae-check/llm";
 import { pasteReviewModalCss } from "./modalStyles";
 import {
-  createPasteReviewActionState,
+  createPasteReviewFooterState,
   RAW_PASTE_BLOCKED_MESSAGE,
-  shouldDisablePasteReviewMaskAction
 } from "./pasteReviewState";
 import {
   createInitialSelectedCandidateIds,
@@ -217,13 +216,17 @@ export async function showPasteReviewModal(options: PasteReviewModalOptions): Pr
       renderFindingList(list, options.detection.findings, selectedRuleFindingIds, renderAfterSelectionChange);
       preview.textContent = createPasteReviewPreviewText(options.inputText, findings);
       renderCandidates(candidateList, llmCandidates, selectedCandidateIds, renderAfterSelectionChange);
-      maskButton.toggleAttribute("disabled", shouldDisablePasteReviewMaskAction(mode, findings.length));
-      const actionState = createPasteReviewActionState(rawPasteAllowed);
-      rawButton.textContent = actionState.rawButtonText;
-      rawButton.toggleAttribute("disabled", actionState.rawButtonDisabled);
-      rawButton.title = actionState.rawButtonTitle;
-      footerNote.textContent = actionState.footerNote;
-      footerNote.hidden = actionState.footerNote.length === 0;
+      const footerState = createPasteReviewFooterState({
+        mode,
+        selectedFindingCount: findings.length,
+        rawPasteAllowed
+      });
+      maskButton.toggleAttribute("disabled", footerState.maskButtonDisabled);
+      rawButton.textContent = footerState.rawButtonText;
+      rawButton.toggleAttribute("disabled", footerState.rawButtonDisabled);
+      rawButton.title = footerState.rawButtonTitle;
+      footerNote.textContent = footerState.footerNote;
+      footerNote.hidden = footerState.footerNoteHidden;
     };
 
     const runLlm = async () => {
