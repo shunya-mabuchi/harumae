@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 const rootDir = resolve(__dirname, "../../..");
 const listingPath = resolve(rootDir, "docs/chrome-web-store-listing.json");
 const assetManifestPath = resolve(rootDir, "docs/chrome-web-store-assets.json");
+const submissionCopyPath = resolve(rootDir, "docs/chrome-web-store-submission-copy.md");
 const qaScriptPath = resolve(rootDir, "scripts/check-chrome-store-readiness.mjs");
 
 function readJson<T>(path: string): T {
@@ -95,5 +96,33 @@ describe("Chrome Web Store readiness", () => {
 
     expect(existsSync(qaScriptPath)).toBe(true);
     expect(rootPackage.scripts["qa:chrome-store"]).toBe("node scripts/check-chrome-store-readiness.mjs");
+  });
+
+  it("Developer Dashboardに貼り付ける最終掲載文をMarkdownで管理する", () => {
+    expect(existsSync(submissionCopyPath)).toBe(true);
+
+    const listing = readJson<{
+      name: string;
+      shortDescription: string;
+      supportUrl: string;
+      privacyPolicyUrl: string;
+      permissionJustifications: Record<string, string>;
+      remoteCode: { explanation: string };
+      dataUsage: { explanation: string };
+    }>(listingPath);
+    const copy = readFileSync(submissionCopyPath, "utf8");
+
+    expect(copy).toContain("# Chrome Web Store 掲載文 最終版");
+    expect(copy).toContain(listing.name);
+    expect(copy).toContain(listing.shortDescription);
+    expect(copy).toContain(listing.supportUrl);
+    expect(copy).toContain(listing.privacyPolicyUrl);
+    expect(copy).toContain(listing.permissionJustifications.storage);
+    expect(copy).toContain(listing.permissionJustifications.host_permissions);
+    expect(copy).toContain(listing.remoteCode.explanation);
+    expect(copy).toContain(listing.dataUsage.explanation);
+    expect(copy).toContain("screenshot-01-real-paste-modal.png");
+    expect(copy).toContain("screenshot-02-real-send-modal.png");
+    expect(copy).toContain("screenshot-03-real-context-modal.png");
   });
 });
