@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { pasteReviewModeForAction } from "../src/content/contentReview";
 import {
   createPasteReviewActionState,
+  createPasteReviewFooterState,
   shouldDisablePasteReviewMaskAction
 } from "../src/lib/pasteReviewState";
 
@@ -60,5 +61,37 @@ describe("paste review modal UI", () => {
     expect(shouldDisablePasteReviewMaskAction("paste_guard", 0)).toBe(false);
     expect(shouldDisablePasteReviewMaskAction("context_check", 0)).toBe(true);
     expect(shouldDisablePasteReviewMaskAction("context_check", 1)).toBe(false);
+  });
+
+  it("footer全体の状態をモード・選択件数・そのまま貼り付け可否から返す", () => {
+    const state = createPasteReviewFooterState({
+      mode: "context_check",
+      selectedFindingCount: 0,
+      rawPasteAllowed: false
+    });
+
+    expect(state.maskButtonDisabled).toBe(true);
+    expect(state.rawButtonText).toBe("そのまま貼り付け（不可）");
+    expect(state.rawButtonDisabled).toBe(true);
+    expect(state.rawButtonTitle).toBe("高リスクまたはSecret Guard対象のため、そのまま貼り付けはできません。");
+    expect(state.footerNote).toBe("高リスクまたはSecret Guard対象のため、そのまま貼り付けはできません。");
+    expect(state.footerNoteHidden).toBe(false);
+  });
+
+  it("footer状態は通常確認とpaste_guardでは候補0件でもマスク操作を維持する", () => {
+    expect(
+      createPasteReviewFooterState({
+        mode: "default",
+        selectedFindingCount: 0,
+        rawPasteAllowed: true
+      }).maskButtonDisabled
+    ).toBe(false);
+    expect(
+      createPasteReviewFooterState({
+        mode: "paste_guard",
+        selectedFindingCount: 0,
+        rawPasteAllowed: false
+      }).maskButtonDisabled
+    ).toBe(false);
   });
 });

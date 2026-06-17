@@ -9,6 +9,17 @@ export interface PasteReviewActionState {
   footerNote: string;
 }
 
+export interface PasteReviewFooterState extends PasteReviewActionState {
+  maskButtonDisabled: boolean;
+  footerNoteHidden: boolean;
+}
+
+export interface PasteReviewFooterStateOptions {
+  mode: PasteReviewModalMode;
+  selectedFindingCount: number;
+  rawPasteAllowed: boolean;
+}
+
 export const RAW_PASTE_BLOCKED_MESSAGE = "高リスクまたはSecret Guard対象のため、そのまま貼り付けはできません。";
 
 export const pasteReviewRiskLabel: Record<RiskLevel, string> = findingRiskLabels;
@@ -24,4 +35,14 @@ export function createPasteReviewActionState(rawPasteAllowed: boolean): PasteRev
 
 export function shouldDisablePasteReviewMaskAction(mode: PasteReviewModalMode, selectedFindingCount: number): boolean {
   return mode === "context_check" && selectedFindingCount === 0;
+}
+
+export function createPasteReviewFooterState(options: PasteReviewFooterStateOptions): PasteReviewFooterState {
+  const actionState = createPasteReviewActionState(options.rawPasteAllowed);
+
+  return {
+    ...actionState,
+    maskButtonDisabled: shouldDisablePasteReviewMaskAction(options.mode, options.selectedFindingCount),
+    footerNoteHidden: actionState.footerNote.length === 0
+  };
 }
