@@ -11,6 +11,7 @@ import {
 } from "./llmBridgeMessages";
 import { getExtensionResourceUrl } from "./extensionRuntime";
 import { createJsonParseBridgeFallbackResult } from "./llmBridgeFallback";
+import { createLlmBridgeAnalyzeRequest } from "./llmBridgeRequest";
 
 interface BridgeConnection {
   port: MessagePort;
@@ -195,16 +196,13 @@ async function sendBridgeRequest<T extends ContextAnalysisResult>(
 }
 
 export function analyzeContextWithBridge(inputText: string, options: BridgeAnalyzeOptions): Promise<ContextAnalysisResult> {
-  const request: LlmBridgeRequest = {
-    type: "analyze",
+  const request = createLlmBridgeAnalyzeRequest({
     requestId: nextRequestId(),
     inputText,
     modelId: options.modelId,
-    options: {
-      ...(options.existingFindings ? { existingFindings: options.existingFindings } : {}),
-      ...(typeof options.maxCandidates === "number" ? { maxCandidates: options.maxCandidates } : {})
-    }
-  };
+    ...(options.existingFindings ? { existingFindings: options.existingFindings } : {}),
+    ...(typeof options.maxCandidates === "number" ? { maxCandidates: options.maxCandidates } : {})
+  });
 
   return sendBridgeRequest(request, options.onProgress);
 }
