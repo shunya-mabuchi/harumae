@@ -21,6 +21,7 @@ import {
   createInitialSelectedFindingIds,
   resolvePasteReviewFindings
 } from "./pasteReviewSelection";
+import { createPasteReviewFindingView } from "./pasteReviewFindingView";
 import { createPasteReviewSummaryItems } from "./pasteReviewSummaryView";
 import {
   createPasteReviewLlmCompleteMessage,
@@ -93,10 +94,11 @@ function renderFindingList(
 
     const body = createElement("div");
     const meta = createElement("div", "hm-meta");
-    meta.append(createElement("span", `hm-badge hm-badge-${finding.riskLevel}`, `危険度: ${pasteReviewRiskLabel[finding.riskLevel]}`));
+    const view = createPasteReviewFindingView(finding, selectedFindingIds.has(finding.id));
+    meta.append(createElement("span", view.riskBadgeClassName, view.riskBadgeText));
     meta.append(createElement("strong", undefined, finding.label));
-    meta.append(createElement("span", "hm-message", finding.source === "llm" ? "AI候補" : "ルール"));
-    meta.append(createElement("span", "hm-message", selectedFindingIds.has(finding.id) ? "マスク対象" : "マスク対象外"));
+    meta.append(createElement("span", "hm-message", view.sourceLabel));
+    meta.append(createElement("span", "hm-message", view.selectionLabel));
     body.append(meta);
     body.append(createElement("code", "hm-text", finding.text));
     body.append(createElement("p", "hm-message", finding.message));
