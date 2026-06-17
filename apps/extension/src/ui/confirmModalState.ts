@@ -8,6 +8,7 @@ import {
   type RiskLevel,
   type TransformMode
 } from "@ai-mae-check/core";
+import { decisionRiskLabels, findingRiskLabels } from "../lib/riskLabels";
 
 export interface TransformModeOption {
   value: TransformMode;
@@ -42,20 +43,8 @@ const categoryLabels: Record<DlpCategory, string> = {
   other: "その他の注意情報"
 };
 
-export const riskLabels: Record<RiskLevel, string> = {
-  critical: "重大",
-  high: "高",
-  medium: "中",
-  low: "低"
-};
-
-export const decisionLabels: Record<RiskDecisionLevel, string> = {
-  safe: "安全寄り",
-  low: "低",
-  medium: "中",
-  high: "高",
-  critical: "重大"
-};
+export const riskLabels: Record<RiskLevel, string> = findingRiskLabels;
+export const decisionLabels: Record<RiskDecisionLevel, string> = decisionRiskLabels;
 
 const riskRank: Record<RiskLevel, number> = {
   low: 1,

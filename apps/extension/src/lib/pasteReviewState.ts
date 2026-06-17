@@ -1,5 +1,6 @@
 import type { RiskLevel } from "@ai-mae-check/core";
 import type { PasteReviewModalMode } from "./pasteReviewModalCopy";
+import { findingRiskLabels } from "./riskLabels";
 
 export interface PasteReviewActionState {
   rawButtonText: string;
@@ -10,12 +11,7 @@ export interface PasteReviewActionState {
 
 export const RAW_PASTE_BLOCKED_MESSAGE = "高リスクまたはSecret Guard対象のため、そのまま貼り付けはできません。";
 
-export const pasteReviewRiskLabel: Record<RiskLevel, string> = {
-  critical: "重大",
-  high: "高",
-  medium: "中",
-  low: "低"
-};
+export const pasteReviewRiskLabel: Record<RiskLevel, string> = findingRiskLabels;
 
 export function createPasteReviewActionState(rawPasteAllowed: boolean): PasteReviewActionState {
   return {

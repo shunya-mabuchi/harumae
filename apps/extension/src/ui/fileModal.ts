@@ -1,6 +1,7 @@
-import type { DetectionResult, DlpPolicyDecision, RiskDecisionLevel } from "@ai-mae-check/core";
+import type { DetectionResult, DlpPolicyDecision } from "@ai-mae-check/core";
 import { filePreflightModalCss } from "./fileModalStyles";
 import { createElement } from "../lib/domElement";
+import { decisionRiskLabels } from "../lib/riskLabels";
 
 export interface FilePreflightModalItem {
   fileName: string;
@@ -17,14 +18,6 @@ export interface FilePreflightModalOptions {
 }
 
 export type FilePreflightModalDecision = "safe" | "allow_raw" | "cancel";
-
-const riskLabel: Record<RiskDecisionLevel, string> = {
-  safe: "安全寄り",
-  low: "低",
-  medium: "中",
-  high: "高",
-  critical: "重大"
-};
 
 function formatSize(size: number): string {
   if (size < 1024) {
@@ -70,7 +63,7 @@ export async function showFilePreflightModal(options: FilePreflightModalOptions)
       const card = createElement("section", "amc-file");
       const heading = createElement("div", "amc-heading");
       heading.append(createElement("span", "amc-name", item.fileName));
-      heading.append(createElement("span", `amc-badge amc-${item.policy.risk.level}`, `判定: ${riskLabel[item.policy.risk.level]}`));
+      heading.append(createElement("span", `amc-badge amc-${item.policy.risk.level}`, `判定: ${decisionRiskLabels[item.policy.risk.level]}`));
       heading.append(createElement("span", "amc-badge", `${item.detection.findings.length}件`));
       heading.append(createElement("span", "amc-badge", formatSize(item.size)));
       card.append(heading);
