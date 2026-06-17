@@ -26,6 +26,15 @@ export function createInitialSelectedCandidateIds(
   );
 }
 
+export function updateSelectedIdSet(selectedIds: Set<string>, id: string, selected: boolean): void {
+  if (selected) {
+    selectedIds.add(id);
+    return;
+  }
+
+  selectedIds.delete(id);
+}
+
 export function resolvePasteReviewFindings(options: ResolvePasteReviewFindingsOptions): Finding[] {
   const selectedRuleFindings = options.ruleFindings.filter((finding) =>
     options.selectedRuleFindingIds.has(finding.id)

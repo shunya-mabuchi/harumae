@@ -4,7 +4,8 @@ import { describe, expect, it } from "vitest";
 import {
   createInitialSelectedCandidateIds,
   createInitialSelectedFindingIds,
-  resolvePasteReviewFindings
+  resolvePasteReviewFindings,
+  updateSelectedIdSet
 } from "../src/lib/pasteReviewSelection";
 
 function createFinding(overrides: Partial<Finding>): Finding {
@@ -80,5 +81,15 @@ describe("pasteReviewSelection", () => {
     expect(findings.map((finding) => finding.text)).toEqual(["taro@example.com", "Project Blue"]);
     expect(findings.every((finding) => finding.text !== "090-1234-5678")).toBe(true);
     expect(findings.every((finding) => finding.text !== "存在しない候補")).toBe(true);
+  });
+
+  it("チェック状態に応じて選択済みID Setを更新する", () => {
+    const selectedIds = new Set(["email", "phone"]);
+
+    updateSelectedIdSet(selectedIds, "project", true);
+    expect([...selectedIds]).toEqual(["email", "phone", "project"]);
+
+    updateSelectedIdSet(selectedIds, "phone", false);
+    expect([...selectedIds]).toEqual(["email", "project"]);
   });
 });

@@ -16,7 +16,8 @@ import {
 import {
   createInitialSelectedCandidateIds,
   createInitialSelectedFindingIds,
-  resolvePasteReviewFindings
+  resolvePasteReviewFindings,
+  updateSelectedIdSet
 } from "./pasteReviewSelection";
 import { createPasteReviewCandidateView } from "./pasteReviewCandidateView";
 import { createPasteReviewFindingView } from "./pasteReviewFindingView";
@@ -83,11 +84,7 @@ function renderFindingList(
     checkbox.type = "checkbox";
     checkbox.checked = selectedFindingIds.has(finding.id);
     checkbox.addEventListener("change", () => {
-      if (checkbox.checked) {
-        selectedFindingIds.add(finding.id);
-      } else {
-        selectedFindingIds.delete(finding.id);
-      }
+      updateSelectedIdSet(selectedFindingIds, finding.id, checkbox.checked);
       onChange();
     });
 
@@ -120,11 +117,7 @@ function renderCandidates(
     checkbox.type = "checkbox";
     checkbox.checked = selectedCandidateIds.has(candidate.id);
     checkbox.addEventListener("change", () => {
-      if (checkbox.checked) {
-        selectedCandidateIds.add(candidate.id);
-      } else {
-        selectedCandidateIds.delete(candidate.id);
-      }
+      updateSelectedIdSet(selectedCandidateIds, candidate.id, checkbox.checked);
       onChange();
     });
 
