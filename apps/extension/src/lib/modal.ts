@@ -22,7 +22,7 @@ import {
   updateSelectedIdSet
 } from "./pasteReviewSelection";
 import { createPasteReviewCandidateListView } from "./pasteReviewCandidateListView";
-import { createPasteReviewFindingView } from "./pasteReviewFindingView";
+import { createPasteReviewFindingListView } from "./pasteReviewFindingListView";
 import { createPasteReviewSummaryItems } from "./pasteReviewSummaryView";
 import { createPasteReviewInsertText, createPasteReviewPreviewText } from "./pasteReviewTextTransform";
 import {
@@ -75,32 +75,32 @@ function renderFindingList(
   onChange: () => void
 ): void {
   container.replaceChildren();
-  if (findings.length === 0) {
-    container.append(createElement("p", "hm-message", "検出項目はありません。"));
+  const listView = createPasteReviewFindingListView(findings, selectedFindingIds);
+  if (listView.emptyMessage) {
+    container.append(createElement("p", "hm-message", listView.emptyMessage));
     return;
   }
 
-  for (const finding of findings) {
+  for (const view of listView.items) {
     const item = createElement("label", "hm-item");
     const wrapper = createElement("div", "hm-select-row");
     const checkbox = createElement("input") as HTMLInputElement;
     checkbox.type = "checkbox";
-    checkbox.checked = selectedFindingIds.has(finding.id);
+    checkbox.checked = view.selected;
     checkbox.addEventListener("change", () => {
-      updateSelectedIdSet(selectedFindingIds, finding.id, checkbox.checked);
+      updateSelectedIdSet(selectedFindingIds, view.id, checkbox.checked);
       onChange();
     });
 
     const body = createElement("div");
     const meta = createElement("div", "hm-meta");
-    const view = createPasteReviewFindingView(finding, selectedFindingIds.has(finding.id));
     meta.append(createElement("span", view.riskBadgeClassName, view.riskBadgeText));
-    meta.append(createElement("strong", undefined, finding.label));
+    meta.append(createElement("strong", undefined, view.label));
     meta.append(createElement("span", "hm-message", view.sourceLabel));
     meta.append(createElement("span", "hm-message", view.selectionLabel));
     body.append(meta);
-    body.append(createElement("code", "hm-text", finding.text));
-    body.append(createElement("p", "hm-message", finding.message));
+    body.append(createElement("code", "hm-text", view.text));
+    body.append(createElement("p", "hm-message", view.message));
     wrapper.append(checkbox, body);
     item.append(wrapper);
     container.append(item);
