@@ -8,7 +8,6 @@ import {
 import {
   classifyLlmError,
   type ContextRiskCandidate,
-  type LlmErrorDetail,
   type LlmProgress
 } from "@ai-mae-check/llm";
 import { pasteReviewModalCss } from "./modalStyles";
@@ -22,6 +21,13 @@ import {
   createInitialSelectedFindingIds,
   resolvePasteReviewFindings
 } from "./pasteReviewSelection";
+import {
+  createPasteReviewLlmCompleteMessage,
+  formatPasteReviewLlmStatusMessage,
+  PASTE_REVIEW_LLM_DISABLED_MESSAGE,
+  PASTE_REVIEW_LLM_INITIAL_MESSAGE,
+  PASTE_REVIEW_LLM_LOADING_MESSAGE
+} from "./pasteReviewLlmState";
 import type { AiMaeCheckSettings } from "./settings";
 import { analyzeContextWithBridge } from "./llmBridgeClient";
 
@@ -133,15 +139,6 @@ function renderCandidates(
   }
 }
 
-function formatLlmStatusMessage(message: string, detail?: LlmErrorDetail): string {
-  if (!detail) {
-    return message;
-  }
-
-  const technical = detail.technicalDetail ? `\n詳細: ${detail.technicalDetail}` : "";
-  return `${message}\n診断メモ: ${detail.hint}${technical}`;
-}
-
 export async function showPasteReviewModal(options: PasteReviewModalOptions): Promise<ModalDecision> {
   return new Promise((resolve) => {
     const isPasteGuard = options.mode === "paste_guard";
@@ -198,7 +195,7 @@ export async function showPasteReviewModal(options: PasteReviewModalOptions): Pr
 
     const llmPanel = createElement("div", "hm-llm");
     llmPanel.append(createElement("h3", undefined, "WebLLMによる文脈チェック"));
-    const llmStatus = createElement("p", "hm-llm-status", "AI文脈チェックは手動で実行できます。");
+    const llmStatus = createElement("p", "hm-llm-status", PASTE_REVIEW_LLM_INITIAL_MESSAGE);
     const candidateList = createElement("div");
     llmPanel.append(llmStatus, candidateList);
 
@@ -265,12 +262,12 @@ export async function showPasteReviewModal(options: PasteReviewModalOptions): Pr
 
     const runLlm = async () => {
       if (!options.settings.llm.enabled) {
-        llmStatus.textContent = "設定でAI文脈チェックが無効になっています。";
+        llmStatus.textContent = PASTE_REVIEW_LLM_DISABLED_MESSAGE;
         return;
       }
 
       llmButton.setAttribute("disabled", "true");
-      llmStatus.textContent = "ローカルAIモデルを準備しています。初回のみ時間がかかる場合があります。";
+      llmStatus.textContent = PASTE_REVIEW_LLM_LOADING_MESSAGE;
 
       try {
         const result = await analyzeContextWithBridge(options.inputText, {
@@ -282,7 +279,7 @@ export async function showPasteReviewModal(options: PasteReviewModalOptions): Pr
         });
 
         if (result.error) {
-          llmStatus.textContent = formatLlmStatusMessage(result.error, result.errorDetail);
+          llmStatus.textContent = formatPasteReviewLlmStatusMessage(result.error, result.errorDetail);
           return;
         }
 
@@ -292,14 +289,11 @@ export async function showPasteReviewModal(options: PasteReviewModalOptions): Pr
           selectedCandidateIds.add(candidateId);
         }
 
-        llmStatus.textContent =
-          result.candidates.length > 0
-            ? "AI文脈チェックで注意候補が見つかりました。"
-            : "AI文脈チェックでは追加の注意候補は見つかりませんでした。ただし、安全を保証するものではありません。";
+        llmStatus.textContent = createPasteReviewLlmCompleteMessage(result.candidates.length);
         render();
       } catch (error: unknown) {
         const detail = classifyLlmError(error);
-        llmStatus.textContent = formatLlmStatusMessage(detail.message, detail);
+        llmStatus.textContent = formatPasteReviewLlmStatusMessage(detail.message, detail);
       } finally {
         llmButton.removeAttribute("disabled");
       }
