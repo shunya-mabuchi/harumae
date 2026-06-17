@@ -2,7 +2,7 @@ import { AlertTriangle, CheckCircle2, ListChecks, Sparkles } from "lucide-react"
 import type { DetectionSummary, Finding } from "@ai-mae-check/core";
 import type { ContextRiskCandidate, LlmErrorDetail } from "@ai-mae-check/llm";
 import { riskLabel, riskMeterTone, riskTone, type LlmStatus } from "../lib/demoConstants";
-import { createRiskSummaryViewModel } from "../lib/demoRiskSummary";
+import { createRiskCountTiles, createRiskSummaryViewModel } from "../lib/demoRiskSummary";
 
 function LlmCandidates({
   candidates,
@@ -71,6 +71,7 @@ export function DetectionResults({
   onToggleCandidate: (id: string) => void;
 }) {
   const riskSummary = createRiskSummaryViewModel(summary, findings);
+  const riskCountTiles = createRiskCountTiles(summary);
 
   return (
     <div className="space-y-5">
@@ -94,18 +95,12 @@ export function DetectionResults({
         </div>
         <p className="mt-3 text-sm leading-6 text-muted">{riskSummary.status.text}</p>
         <div className="mt-4 grid grid-cols-3 gap-2">
-          <div className="rounded-card bg-rose-50 p-3">
-            <p className="text-xs font-black text-rose-700">高</p>
-            <p className="text-2xl font-black text-rose-800">{summary.high + summary.critical}</p>
-          </div>
-          <div className="rounded-card bg-amber-50 p-3">
-            <p className="text-xs font-black text-amber-800">中</p>
-            <p className="text-2xl font-black text-amber-900">{summary.medium}</p>
-          </div>
-          <div className="rounded-card bg-sky-50 p-3">
-            <p className="text-xs font-black text-sky-800">低</p>
-            <p className="text-2xl font-black text-sky-900">{summary.low}</p>
-          </div>
+          {riskCountTiles.map((tile) => (
+            <div key={tile.key} className={tile.containerClassName}>
+              <p className={tile.labelClassName}>{tile.label}</p>
+              <p className={tile.countClassName}>{tile.count}</p>
+            </div>
+          ))}
         </div>
       </div>
 
