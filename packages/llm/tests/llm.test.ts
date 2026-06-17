@@ -97,6 +97,49 @@ describe("parseContextAnalysisJson", () => {
     expect(result.summary).toBe("顧客名候補があります。");
   });
 
+  it("トップレベル配列だけの候補JSONも読み取る", () => {
+    const result = parseContextAnalysisJson(
+      JSON.stringify([
+        {
+          category: "person_name",
+          surface: "山田花子さん",
+          label: "人名候補",
+          reason: "採用文脈に含まれる個人名候補です。",
+          riskLevel: "medium",
+          suggestedPlaceholder: "[PERSON_1]",
+          confidence: 0.88
+        }
+      ])
+    );
+
+    expect(result.candidates).toHaveLength(1);
+    expect(result.candidates[0]?.surface).toBe("山田花子さん");
+    expect(result.summary).toBe("AI文脈チェックの追加候補を確認しました。");
+  });
+
+  it("candidates以外の候補キーでも読み取る", () => {
+    const result = parseContextAnalysisJson(
+      JSON.stringify({
+        risks: [
+          {
+            category: "project_name",
+            surface: "Project Blue Bridge",
+            label: "案件名候補",
+            reason: "プロジェクト名らしい表現です。",
+            riskLevel: "medium",
+            suggestedPlaceholder: "[PROJECT_1]",
+            confidence: 0.84
+          }
+        ],
+        summary: "案件名候補があります。"
+      })
+    );
+
+    expect(result.candidates).toHaveLength(1);
+    expect(result.candidates[0]?.category).toBe("project_name");
+    expect(result.summary).toBe("案件名候補があります。");
+  });
+
   it("confidenceThreshold未満を捨てる", () => {
     const result = parseContextAnalysisJson(
       JSON.stringify({

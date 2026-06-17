@@ -150,10 +150,30 @@ class WorkerLlmContextAnalyzer implements LlmContextAnalyzer {
         max_tokens: this.options.maxTokens
       });
       const rawText = completion.choices?.[0]?.message?.content ?? "";
-      const parsed = parseContextAnalysisJson(rawText, {
-        ...(typeof options.maxCandidates === "number" ? { maxCandidates: options.maxCandidates } : {}),
-        confidenceThreshold: this.options.confidenceThreshold
-      });
+      let parsed: ReturnType<typeof parseContextAnalysisJson>;
+
+      try {
+        parsed = parseContextAnalysisJson(rawText, {
+          ...(typeof options.maxCandidates === "number" ? { maxCandidates: options.maxCandidates } : {}),
+          confidenceThreshold: this.options.confidenceThreshold
+        });
+      } catch (error) {
+        const fallbackCandidates = mergeResidualContextCandidates(inputForModel, [], {
+          ...(typeof options.maxCandidates === "number" ? { maxCandidates: options.maxCandidates } : {})
+        });
+
+        if (fallbackCandidates.length === 0) {
+          throw error;
+        }
+
+        return {
+          candidates: fallbackCandidates,
+          summary: "AI文脈チェックの出力形式は読み取れませんでしたが、ブラウザ内の補助検出で注意候補を確認しました。",
+          rawText,
+          modelId,
+          elapsedMs: Math.max(0, performance.now() - startedAt)
+        };
+      }
 
       const candidates = mergeResidualContextCandidates(inputForModel, parsed.candidates, {
         ...(typeof options.maxCandidates === "number" ? { maxCandidates: options.maxCandidates } : {})

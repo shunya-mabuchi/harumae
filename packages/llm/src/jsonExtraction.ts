@@ -71,22 +71,26 @@ function hasPreferredKey(parsed: unknown, preferredKeys: string[]): boolean {
     return true;
   }
 
+  if (Array.isArray(parsed)) {
+    return true;
+  }
+
   return isRecord(parsed) && preferredKeys.some((key) => Object.prototype.hasOwnProperty.call(parsed, key));
 }
 
 export function extractJsonObject(rawText: string, preferredKeys: string[] = []): string {
   const candidates = unique([rawText, ...findFencedJsonBlocks(rawText), ...findBalancedObjects(rawText)]);
-  let firstJsonObject = "";
+  let firstJsonValue = "";
 
   for (const candidate of candidates) {
     try {
       const parsed = JSON.parse(candidate);
-      if (!isRecord(parsed)) {
+      if (!isRecord(parsed) && !Array.isArray(parsed)) {
         continue;
       }
 
-      if (firstJsonObject.length === 0) {
-        firstJsonObject = candidate;
+      if (firstJsonValue.length === 0) {
+        firstJsonValue = candidate;
       }
 
       if (hasPreferredKey(parsed, preferredKeys)) {
@@ -97,5 +101,5 @@ export function extractJsonObject(rawText: string, preferredKeys: string[] = [])
     }
   }
 
-  return firstJsonObject.length > 0 ? firstJsonObject : rawText;
+  return firstJsonValue.length > 0 ? firstJsonValue : rawText;
 }

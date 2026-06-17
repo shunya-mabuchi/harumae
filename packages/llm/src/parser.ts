@@ -16,6 +16,17 @@ const categories: ContextRiskCategory[] = [
   "other"
 ];
 
+const candidateListKeys = [
+  "candidates",
+  "risks",
+  "riskCandidates",
+  "contextRiskCandidates",
+  "items",
+  "findings",
+  "候補",
+  "注意候補"
+] as const;
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -38,6 +49,25 @@ function clampConfidence(value: unknown): number {
   return Math.min(1, Math.max(0, value));
 }
 
+function candidateValues(parsed: unknown): unknown[] {
+  if (Array.isArray(parsed)) {
+    return parsed;
+  }
+
+  if (!isRecord(parsed)) {
+    return [];
+  }
+
+  for (const key of candidateListKeys) {
+    const value = parsed[key];
+    if (Array.isArray(value)) {
+      return value;
+    }
+  }
+
+  return [];
+}
+
 export interface ParseContextAnalysisOptions {
   maxCandidates?: number;
   confidenceThreshold?: number;
@@ -49,16 +79,16 @@ export function parseContextAnalysisJson(rawText: string, options: ParseContextA
   let parsed: unknown;
 
   try {
-    parsed = JSON.parse(extractJsonObject(rawText, ["candidates", "summary"]));
+    parsed = JSON.parse(extractJsonObject(rawText, [...candidateListKeys, "summary"]));
   } catch {
     throw new Error("AI文脈チェックの結果を読み取れませんでした");
   }
 
-  if (!isRecord(parsed)) {
+  if (!isRecord(parsed) && !Array.isArray(parsed)) {
     throw new Error("AI文脈チェックの結果を読み取れませんでした");
   }
 
-  const rawCandidates = Array.isArray(parsed.candidates) ? parsed.candidates : [];
+  const rawCandidates = candidateValues(parsed);
   const candidates: ContextRiskCandidate[] = [];
 
   for (const rawCandidate of rawCandidates) {
@@ -97,7 +127,7 @@ export function parseContextAnalysisJson(rawText: string, options: ParseContextA
   return {
     candidates,
     summary:
-      typeof parsed.summary === "string" && parsed.summary.trim().length > 0
+      isRecord(parsed) && typeof parsed.summary === "string" && parsed.summary.trim().length > 0
         ? parsed.summary.trim()
         : "AI文脈チェックの追加候補を確認しました。"
   };
