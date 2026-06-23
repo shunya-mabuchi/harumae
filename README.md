@@ -228,6 +228,7 @@ pnpm build:worker
 pnpm package:extension
 pnpm qa:public-repo
 pnpm qa:public-docs
+pnpm qa:webllm-model-policy
 pnpm qa:extension:manifest
 pnpm qa:chrome-store
 pnpm test
@@ -247,6 +248,8 @@ pnpm typecheck
 `pnpm qa:public-repo` は、publicリポジトリへ実secret、private JWK、生成物、ログ、ZIPが混入していないかを確認するQAコマンドです。監査手順は [docs/public-repo-safety.md](docs/public-repo-safety.md) にまとめています。
 
 `pnpm qa:public-docs` は、README、LP、Chrome Web Store掲載文、プライバシー方針、サポート導線の重要URLとプライバシー表現がずれていないかを確認する公開文書同期QAです。
+
+`pnpm qa:webllm-model-policy` は、WebLLMの標準モデルID、fallbackモデルID、モデルライセンス確認文書が実装とずれていないかを確認するQAです。モデル選定方針は [docs/webllm-model-policy.md](docs/webllm-model-policy.md) にまとめています。
 
 `pnpm qa:extension:manifest` は、ビルド済み拡張のmanifestが初期対象サイト、最小権限、WebLLM bridge公開リソースを満たしているか確認するQAコマンドです。
 
