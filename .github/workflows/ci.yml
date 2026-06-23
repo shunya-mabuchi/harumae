@@ -60,6 +60,9 @@ jobs:
       - name: WebLLM compatibility QA
         run: pnpm qa:webllm-compatibility
 
+      - name: Rule catalog QA
+        run: pnpm qa:rule-catalog
+
       - name: Dependency policy QA
         run: pnpm qa:dependency-policy
 

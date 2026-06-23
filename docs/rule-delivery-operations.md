@@ -36,6 +36,8 @@ YYYY.MM.DD.N
 - `minExtensionVersion` を上げる場合は、古い拡張で使えない理由をPRに明記する
 - ルールIDは後方互換性のため安定させ、意味が変わる場合は新しいIDを作る
 
+検出ルール作成ガイド、同梱ルールカタログ、命名規則、誤検出を避けるレビュー観点は [detection-rule-authoring.md](./detection-rule-authoring.md) を参照してください。
+
 ## keyId管理
 
 `keyId` は「どの公開鍵で検証すべき署名か」を表します。

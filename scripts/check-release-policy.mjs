@@ -56,6 +56,7 @@ for (const command of [
   "pnpm qa:privacy-regression",
   "pnpm qa:webllm-model-policy",
   "pnpm qa:webllm-compatibility",
+  "pnpm qa:rule-catalog",
   "pnpm qa:dependency-policy",
   "pnpm qa:demo:seo",
   "pnpm qa:portfolio-case-study",
