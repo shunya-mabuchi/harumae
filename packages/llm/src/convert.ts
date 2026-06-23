@@ -1,5 +1,5 @@
 import type { Finding } from "@ai-mae-check/core";
-import { DEFAULT_CONFIDENCE_THRESHOLD } from "./constants";
+import { DEFAULT_CONFIDENCE_THRESHOLD, MAX_CONTEXT_SURFACE_CHARS } from "./constants";
 import type { ContextRiskCandidate, ContextRiskCategory, ConvertCandidatesOptions } from "./types";
 
 const placeholderPrefixByCategory: Record<ContextRiskCategory, string> = {
@@ -15,6 +15,31 @@ const placeholderPrefixByCategory: Record<ContextRiskCategory, string> = {
   confidential_context: "CONFIDENTIAL_CONTEXT",
   other: "CONTEXT"
 };
+
+const genericNamedEntitySurfaces = new Set([
+  "提案",
+  "資料",
+  "会議",
+  "契約",
+  "見積",
+  "採用",
+  "給与",
+  "法務",
+  "社内",
+  "社外",
+  "確認",
+  "共有",
+  "候補",
+  "プロジェクト"
+]);
+
+function isAmbiguousNamedEntitySurface(candidate: ContextRiskCandidate): boolean {
+  if (!["company_name", "customer_name", "project_name"].includes(candidate.category)) {
+    return false;
+  }
+
+  return genericNamedEntitySurfaces.has(candidate.surface.trim());
+}
 
 function findOccurrences(input: string, surface: string, includeAllOccurrences: boolean): Array<{ start: number; end: number }> {
   const occurrences: Array<{ start: number; end: number }> = [];
@@ -50,7 +75,12 @@ export function convertContextCandidatesToFindings(
   const findings: Finding[] = [];
 
   for (const candidate of candidates) {
-    if (candidate.confidence < threshold || candidate.surface.length === 0) {
+    if (
+      candidate.confidence < threshold ||
+      candidate.surface.length === 0 ||
+      candidate.surface.length > MAX_CONTEXT_SURFACE_CHARS ||
+      isAmbiguousNamedEntitySurface(candidate)
+    ) {
       continue;
     }
 

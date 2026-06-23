@@ -1,4 +1,4 @@
-import { DEFAULT_CONFIDENCE_THRESHOLD, DEFAULT_MAX_CANDIDATES } from "./constants";
+import { DEFAULT_CONFIDENCE_THRESHOLD, DEFAULT_MAX_CANDIDATES, MAX_CONTEXT_SURFACE_CHARS } from "./constants";
 import { extractJsonObject } from "./jsonExtraction";
 import {
   clampConfidence,
@@ -47,7 +47,7 @@ export function parseContextAnalysisJson(rawText: string, options: ParseContextA
     const confidence = clampConfidence(readCandidateValue(rawCandidate, "confidence"));
     const suggestedPlaceholder = readCandidateString(rawCandidate, "suggestedPlaceholder");
 
-    if (surface.length === 0 || confidence < confidenceThreshold) {
+    if (surface.length === 0 || surface.length > MAX_CONTEXT_SURFACE_CHARS || confidence < confidenceThreshold) {
       continue;
     }
 
