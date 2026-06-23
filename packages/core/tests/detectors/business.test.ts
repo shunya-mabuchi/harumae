@@ -1,36 +1,18 @@
 import { describe, expect, it } from "vitest";
-import type { DetectorRule } from "../src/types";
-import {
-  confidentialLineFindings,
-  creditCardFindings,
-  internalUrlFindings,
-  phoneFindings
-} from "../src/specializedDetectors";
+import type { DetectorRule } from "../../src/types";
+import { confidentialLineFindings, internalUrlFindings } from "../../src/detectors";
 
 function rule(id: string, label = id): DetectorRule {
   return {
     id,
     label,
-    riskLevel: id === "confidential_text" || id === "internal_url" ? "medium" : "high",
+    riskLevel: "medium",
     enabled: true,
     createFindings: () => []
   };
 }
 
-describe("specializedDetectors", () => {
-  it("日本の電話番号らしい候補だけを返す", () => {
-    const findings = phoneFindings("電話 090-1234-5678 / 短い番号 03-12", rule("phone", "日本の電話番号"));
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0]?.text).toBe("090-1234-5678");
-  });
-
-  it("Luhnチェックに通るカード番号だけを返す", () => {
-    const findings = creditCardFindings("候補 4111 1111 1111 1111 と 4111 1111 1111 1112", rule("credit_card", "クレジットカード風番号"));
-
-    expect(findings.map((finding) => finding.text)).toEqual(["4111 1111 1111 1111"]);
-  });
-
+describe("business detectors", () => {
   it("注意語を含む行全体を返す", () => {
     const findings = confidentialLineFindings(
       "公開情報です。\nA社向け資料はNDA締結前なので関係者限りです。",
