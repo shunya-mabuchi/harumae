@@ -60,6 +60,9 @@ jobs:
       - name: Release policy QA
         run: pnpm qa:release-policy
 
+      - name: Issue and PR workflow QA
+        run: pnpm qa:issue-pr-workflow
+
       - name: Extension size budget QA
         run: pnpm qa:extension:size
 
