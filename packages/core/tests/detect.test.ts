@@ -40,6 +40,34 @@ describe("detectSensitiveText", () => {
     expect(firstRuleId("ghp_dummyDummyDummyDummyDummyDummy123456")).toBe("github_token");
   });
 
+  it("Slack token風文字列を検出する", () => {
+    const token = ["xoxb", "dummyDummyDummy123"].join("-");
+
+    expect(firstRuleId(token)).toBe("slack_token");
+  });
+
+  it("Stripe secret key風文字列を検出する", () => {
+    const token = ["sk", "test", "dummyDummyDummy123456"].join("_");
+
+    expect(firstRuleId(token)).toBe("stripe_secret_key");
+  });
+
+  it("OpenAI API key風文字列を検出する", () => {
+    const token = ["sk", "dummyDummyDummyDummy123456"].join("-");
+
+    expect(firstRuleId(token)).toBe("openai_api_key");
+  });
+
+  it("npm token風文字列を検出する", () => {
+    const token = ["npm", "dummyDummyDummy123456"].join("_");
+
+    expect(firstRuleId(token)).toBe("npm_token");
+  });
+
+  it("OAuth client secret風文字列を検出する", () => {
+    expect(firstRuleId('clientSecret: "dummyOAuthSecretValue12345"')).toBe("oauth_client_secret");
+  });
+
   it("秘密鍵を検出する", () => {
     const input = [
       "-----BEGIN PRIVATE KEY-----",
@@ -66,6 +94,32 @@ describe("detectSensitiveText", () => {
     expect(result.findings).toHaveLength(1);
     expect(result.findings[0]?.ruleId).toBe("basic_auth_url");
     expect(result.maskedText).toBe("[BASIC_AUTH_URL_1]");
+  });
+
+  it("Webhook URL風文字列を検出する", () => {
+    const input = "通知先は https://hooks.slack.com/services/T000/B000/XXX です。";
+    const result = detectSensitiveText(input);
+
+    expect(result.findings).toHaveLength(1);
+    expect(result.findings[0]?.ruleId).toBe("webhook_url");
+    expect(result.maskedText).toContain("[WEBHOOK_URL_1]");
+  });
+
+  it("DATABASE_URL風接続文字列を検出する", () => {
+    const input = "接続先は postgres://user:pass@example.local/db です。";
+    const result = detectSensitiveText(input);
+
+    expect(result.findings[0]?.ruleId).toBe("database_url");
+    expect(result.maskedText).toContain("[DATABASE_URL_1]");
+  });
+
+  it("文脈語がある場合だけマイナンバー風文字列を検出する", () => {
+    const result = detectSensitiveText("個人番号は 1234-5678-9012 です。");
+    const falsePositive = detectSensitiveText("注文番号は 1234-5678-9012 です。");
+
+    expect(result.findings[0]?.ruleId).toBe("my_number");
+    expect(result.maskedText).toContain("[MY_NUMBER_1]");
+    expect(falsePositive.findings.some((finding) => finding.ruleId === "my_number")).toBe(false);
   });
 
   it("URLを検出する", () => {

@@ -3,6 +3,7 @@ import {
   confidentialLineFindings,
   creditCardFindings,
   internalUrlFindings,
+  myNumberFindings,
   phoneFindings
 } from "./specializedDetectors";
 import type { DetectorRule } from "./types";
@@ -40,6 +41,42 @@ const rules: DetectorRule[] = [
     pattern: /\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{20,}\b|\bgithub_pat_[A-Za-z0-9_]{20,}\b/g
   }),
   createRegexRule({
+    id: "slack_token",
+    label: "Slack token風文字列",
+    riskLevel: "high",
+    pattern: /\bxox[baprs]-[A-Za-z0-9-]{10,}\b/g
+  }),
+  createRegexRule({
+    id: "stripe_secret_key",
+    label: "Stripe secret key風文字列",
+    riskLevel: "high",
+    pattern: /\b(?:sk|rk)_(?:live|test)_[A-Za-z0-9]{16,}\b/g
+  }),
+  createRegexRule({
+    id: "openai_api_key",
+    label: "OpenAI API key風文字列",
+    riskLevel: "high",
+    pattern: /\bsk-(?:proj-)?[A-Za-z0-9_-]{20,}\b/g
+  }),
+  createRegexRule({
+    id: "npm_token",
+    label: "npm token風文字列",
+    riskLevel: "high",
+    pattern: /\bnpm_[A-Za-z0-9]{16,}\b/g
+  }),
+  createRegexRule({
+    id: "oauth_client_secret",
+    label: "OAuth client secret風文字列",
+    riskLevel: "high",
+    pattern: /\b(?:client_secret|clientSecret)\s*[:=]\s*["']?[A-Za-z0-9._~/-]{16,}["']?/g
+  }),
+  createRegexRule({
+    id: "webhook_url",
+    label: "Webhook URL風文字列",
+    riskLevel: "high",
+    pattern: /\bhttps:\/\/hooks\.slack\.com\/services\/[A-Za-z0-9/_-]+|\bhttps:\/\/discord(?:app)?\.com\/api\/webhooks\/\d+\/[A-Za-z0-9_-]+/g
+  }),
+  createRegexRule({
     id: "private_key",
     label: "秘密鍵",
     riskLevel: "high",
@@ -58,12 +95,25 @@ const rules: DetectorRule[] = [
     riskLevel: "high",
     pattern: /\bhttps?:\/\/[^\s:@/]+:[^\s@/]+@[^\s<>"'）)]+/gi
   }),
+  createRegexRule({
+    id: "database_url",
+    label: "DATABASE_URL風接続文字列",
+    riskLevel: "high",
+    pattern: /\b(?:postgres(?:ql)?|mysql|mariadb|mongodb(?:\+srv)?|redis):\/\/[^\s:@/]+:[^\s@/]+@[^\s<>"'）)]+/gi
+  }),
   {
     id: "credit_card",
     label: "クレジットカード風番号",
     riskLevel: "high",
     enabled: true,
     createFindings: (input) => creditCardFindings(input, rulesById.credit_card!)
+  },
+  {
+    id: "my_number",
+    label: "マイナンバー風文字列",
+    riskLevel: "high",
+    enabled: true,
+    createFindings: (input) => myNumberFindings(input, rulesById.my_number!)
   },
   createRegexRule({
     id: "url",

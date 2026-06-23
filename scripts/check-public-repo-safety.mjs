@@ -54,6 +54,14 @@ const tokenPatterns = [
   {
     name: "Slack token",
     pattern: /\bxox[baprs]-[A-Za-z0-9-]{10,}\b/gu
+  },
+  {
+    name: "Stripe secret key",
+    pattern: /\b(?:sk|rk)_(?:live|test)_[A-Za-z0-9]{16,}\b/gu
+  },
+  {
+    name: "npm token",
+    pattern: /\bnpm_[A-Za-z0-9]{16,}\b/gu
   }
 ];
 
