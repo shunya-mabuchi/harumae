@@ -55,3 +55,29 @@ export function internalUrlFindings(input: string, rule: DetectorRule): Finding[
 
   return findings;
 }
+
+export function myNumberFindings(input: string, rule: DetectorRule): Finding[] {
+  const findings: Finding[] = [];
+  const contextPattern = /マイナンバー|個人番号/u;
+  const linePattern = /[^\r\n]+/g;
+  const numberPattern = /(?<!\d)(?:\d{4}[-\s]?\d{4}[-\s]?\d{4})(?!\d)/g;
+  let lineMatch: RegExpExecArray | null;
+
+  while ((lineMatch = linePattern.exec(input)) !== null) {
+    const line = lineMatch[0];
+    if (!contextPattern.test(line)) {
+      continue;
+    }
+
+    numberPattern.lastIndex = 0;
+    let numberMatch: RegExpExecArray | null;
+    while ((numberMatch = numberPattern.exec(line)) !== null) {
+      const start = lineMatch.index + numberMatch.index;
+      findings.push(
+        createRuleFinding(input, rule, start, start + numberMatch[0].length, 0.85)
+      );
+    }
+  }
+
+  return findings;
+}

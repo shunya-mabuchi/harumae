@@ -22,7 +22,7 @@ pnpm qa:public-repo
 
 - `.output`、`dist`、`artifacts`、ログ、ZIP、private JWKファイル候補が追跡されていないこと
 - `privateJwk` の `d` フィールド実値らしきものがないこと
-- GitHub token、AWS Access Key、OpenAI形式キー、Slack token風文字列が、許可済みダミー以外で混入していないこと
+- GitHub token、AWS Access Key、OpenAI形式キー、Slack token風文字列、Stripe secret key風文字列、npm token風文字列が、許可済みダミー以外で混入していないこと
 - 秘密鍵PEM風文字列が、検出ルールのテストfixture以外に混入していないこと
 
 ## 手動確認

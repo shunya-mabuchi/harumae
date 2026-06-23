@@ -47,4 +47,14 @@ describe("evaluateDlpPolicy", () => {
     expect(decision.canSendRaw).toBe(false);
     expect(decision.requiresSanitization).toBe(true);
   });
+
+  it("追加のtoken風ルールも秘密情報保護の対象にする", () => {
+    const token = ["sk", "dummyDummyDummyDummy123456"].join("-");
+    const detection = detectSensitiveText(token);
+    const decision = evaluateDlpPolicy(detection.findings);
+
+    expect(detection.findings[0]?.ruleId).toBe("openai_api_key");
+    expect(decision.action).toBe("sanitize_required");
+    expect(decision.canSendRaw).toBe(false);
+  });
 });

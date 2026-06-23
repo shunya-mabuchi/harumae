@@ -73,7 +73,7 @@ AIまえチェックの検出ルールは、メールアドレスやAPIキー風
 | riskLevel | 判断基準 | 例 |
 | --- | --- | --- |
 | `critical` | 送信不可に近い重大情報。将来のポリシー分離で利用する想定。 | 本番秘密鍵、復旧不能な高権限token |
-| `high` | そのまま送る前に安全化が必要な情報。Secret Guard対象になり得る。 | APIキー、秘密鍵、JWT、認証情報URL、クレジットカード風番号 |
+| `high` | そのまま送る前に安全化が必要な情報。Secret Guard対象になり得る。 | APIキー、秘密鍵、JWT、認証情報URL、Webhook URL、クレジットカード風番号、マイナンバー風文字列 |
 | `medium` | 文脈によって注意が必要。詳細確認後にユーザー判断を許す。 | URL、社内URL、金額、社外秘文、社内文脈 |
 | `low` | 補助的な注意対象。単体では送信不可にしない。 | 日付、郵便番号、長いID風文字列 |
 
@@ -147,10 +147,18 @@ Webhook URLは外部へ送る前に確認したい秘密情報です。
 | `jwt` | JWT | `high` | `[JWT_1]` | token風の3セグメント文字列 |
 | `aws_access_key` | AWS Access Key風文字列 | `high` | `[AWS_KEY_1]` | `AKIA` / `ASIA` で始まる20文字程度 |
 | `github_token` | GitHub token風文字列 | `high` | `[GITHUB_TOKEN_1]` | `ghp_`、`github_pat_` など |
+| `slack_token` | Slack token風文字列 | `high` | `[SLACK_TOKEN_1]` | `xoxb-` などのSlack token風prefix |
+| `stripe_secret_key` | Stripe secret key風文字列 | `high` | `[STRIPE_KEY_1]` | `sk_` / `rk_` のsecret/restricted key風文字列 |
+| `openai_api_key` | OpenAI API key風文字列 | `high` | `[OPENAI_API_KEY_1]` | `sk-` / `sk-proj-` 形式 |
+| `npm_token` | npm token風文字列 | `high` | `[NPM_TOKEN_1]` | `npm_` 形式 |
+| `oauth_client_secret` | OAuth client secret風文字列 | `high` | `[OAUTH_CLIENT_SECRET_1]` | `client_secret=` / `clientSecret:` 形式 |
 | `private_key` | 秘密鍵 | `high` | `[PRIVATE_KEY_1]` | PEM形式の秘密鍵 |
 | `env_secret` | `.env`形式の秘密情報 | `high` | `[ENV_SECRET_1]` | KEY名にSECRET/TOKEN/API_KEY等を含む行 |
 | `basic_auth_url` | Basic認証情報を含むURL | `high` | `[BASIC_AUTH_URL_1]` | `https://user:password@example.com` 形式 |
+| `webhook_url` | Webhook URL風文字列 | `high` | `[WEBHOOK_URL_1]` | Slack / Discord webhook URL風文字列 |
+| `database_url` | DATABASE_URL風接続文字列 | `high` | `[DATABASE_URL_1]` | DB接続URIにユーザー名とパスワードを含むもの |
 | `credit_card` | クレジットカード風番号 | `high` | `[CARD_1]` | Luhnチェックあり |
+| `my_number` | マイナンバー風文字列 | `high` | `[MY_NUMBER_1]` | 同じ行に「マイナンバー」または「個人番号」がある場合だけ検出 |
 | `url` | URL | `medium` | `[URL_1]` | 外部共有前に文脈確認 |
 | `ip_address` | IPv4アドレス | `medium` | `[IP_ADDRESS_1]` | 内部IPかどうかは文脈依存 |
 | `amount` | 金額 | `medium` | `[AMOUNT_1]` | 見積/給与/契約文脈に注意 |
