@@ -292,6 +292,8 @@ Options Pageの設定グループ、保存対象、`settingsVersion`、設定マ
 
 Chrome拡張の権限、CSP、web accessible resources、依存関係、WebLLMモデル説明の監査チェックリストは [docs/extension-security-audit.md](docs/extension-security-audit.md) にまとめています。
 
+AIまえチェックが守る範囲、守れない範囲、信頼境界、重大度の見方は [docs/threat-model.md](docs/threat-model.md) にまとめています。
+
 `pnpm qa:chrome-store` は、提出用ZIP、Chrome Web Store掲載情報、ストア用画像寸法、プライバシーポリシー、誇大表現の混入に加えて、本番ルール配信URL・`keyId`・公開JWKが提出物へ一致して埋め込まれているかをまとめて確認する公開前QAコマンドです。
 
 `pnpm rules:keygen` は、ルール配信API用のECDSA P-256鍵ペアを生成します。署名方式とAPI仕様は [docs/rule-delivery.md](docs/rule-delivery.md) にまとめています。新しい検出ルールを追加するときの命名、riskLevel、placeholder、テスト観点は [docs/detection-rule-authoring.md](docs/detection-rule-authoring.md) にまとめています。
