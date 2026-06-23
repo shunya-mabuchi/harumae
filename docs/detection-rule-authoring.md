@@ -8,13 +8,31 @@ AIまえチェックの検出ルールは、メールアドレスやAPIキー風
 
 ### 同梱ルール
 
-- 実装場所: `packages/core/src/rules.ts`
+- 実装場所: `packages/core/src/detectors/`
+- 集約場所: `packages/core/src/rules.ts`
 - helper: `packages/core/src/ruleHelpers.ts`
-- specialized detector: `packages/core/src/specializedDetectors.ts`
+- カテゴリ別detector:
+  - `packages/core/src/detectors/pii.ts`
+  - `packages/core/src/detectors/secret.ts`
+  - `packages/core/src/detectors/business.ts`
+  - `packages/core/src/detectors/technical.ts`
 - 利用方法: `detectSensitiveText(input)` で常に利用される
 - 変更方法: コード変更、テスト、拡張の再ビルド、Chrome Web Store再提出が必要
 
 同梱ルールは、安定性と説明可能性を重視します。誤検出が強いものや運用で微調整したいものは、いきなり同梱せず、配信ルールや実験用fixtureで検証します。
+
+### 同梱ルールのカテゴリ構成
+
+`packages/core/src/rules.ts` は公開API向けの集約だけを担当し、実際の検出器はカテゴリ別ファイルに置きます。
+
+| ファイル | 主な責務 | 例 |
+| --- | --- | --- |
+| `detectors/pii.ts` | 個人情報や本人識別につながりやすい値 | メールアドレス、電話番号、クレジットカード風番号、マイナンバー風文字列、郵便番号 |
+| `detectors/secret.ts` | 認証情報、token、秘密鍵、接続文字列 | JWT、AWS Access Key風文字列、GitHub token風文字列、秘密鍵、`.env`形式の秘密情報、Basic認証URL |
+| `detectors/business.ts` | 業務文脈で注意したい値や行 | 金額、社外秘・注意語を含む文、社内URLっぽいもの |
+| `detectors/technical.ts` | 技術的な識別子や補助的な値 | URL、IPv4アドレス、日付、長いID風文字列 |
+
+検出順序は `detectors/index.ts` の `DEFAULT_DETECTOR_RULE_ORDER` で固定しています。カテゴリ内の実装場所を変えても、重複解決やマスキング結果の挙動が変わらないようにするためです。
 
 ### 署名付き配信ルール
 
