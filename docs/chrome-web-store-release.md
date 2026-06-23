@@ -150,6 +150,7 @@ pnpm qa:chrome-store
 - [ ] `pnpm qa:privacy-regression` が通る
 - [ ] `pnpm qa:webllm-model-policy` が通る
 - [ ] `pnpm qa:webllm-compatibility` が通る
+- [ ] `pnpm qa:rule-catalog` が通る
 - [ ] `pnpm qa:dependency-policy` が通る
 - [ ] `pnpm qa:release-policy` が通る
 - [ ] `pnpm qa:demo:seo` が通る

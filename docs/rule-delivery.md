@@ -85,6 +85,8 @@ pnpm rules:keygen -- --key-id ai-mae-check-rules-2026-06-v2 --private-out ../ai-
 
 鍵ローテーション、壊れたルール配信時のロールバック、`privateJwk` の扱いは [rule-delivery-operations.md](./rule-delivery-operations.md) にまとめています。
 
+検出ルール作成ガイド、同梱ルールカタログ、ルールID・riskLevel・placeholderPrefix・テスト観点は [detection-rule-authoring.md](./detection-rule-authoring.md) にまとめています。
+
 ## 拡張側フロー
 
 1. `VITE_RULE_DELIVERY_URL` が未設定なら、リモート取得を行わず同梱ルールだけで検出する
