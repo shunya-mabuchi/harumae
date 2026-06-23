@@ -150,7 +150,7 @@ function demoScreenshot() {
               <div class="metric risk-high">高<b>5</b></div><div class="metric risk-mid">中<b>3</b></div><div class="metric risk-low">低<b>0</b></div>
             </div>
             <div style="margin-top:10px;">
-              ${["メールアドレス", "日本の電話番号", "AWS Access Key", "社外秘・注意語", "金額"].map((label) => `<div class="finding"><div class="check">✓</div><div><b>${label}</b><div class="mini">マスク対象に含める</div></div></div>`).join("")}
+              ${["メールアドレス", "日本の電話番号", "AWS Access Key", "社外秘・注意語", "金額"].map((label) => `<div class="finding"><div class="check">✓</div><div><b>${label}</b><div class="mini">安全化対象に含める</div></div></div>`).join("")}
             </div>
           </div>
         </div>
@@ -173,14 +173,14 @@ function modalScreenshot() {
         <div class="grid cols-2" style="margin-top:24px;">
           <div>
             ${[
-              ["メールアドレス", "高リスク / マスク対象に含める"],
-              ["GitHub token風文字列", "高リスク / Secret Guard対象"],
+              ["メールアドレス", "高リスク / 安全化対象"],
+              ["GitHub token風文字列", "高リスク / 秘密情報保護の対象"],
               ["顧客名候補", "AI文脈チェック候補"],
               ["契約・採用文脈", "中リスク / 確認対象"]
             ].map(([label, detail], index) => `<div class="finding"><div class="check">${index + 1}</div><div><b>${label}</b><div class="mini">${detail}</div></div></div>`).join("")}
             <div class="card" style="padding:16px;margin-top:16px;box-shadow:none;">
               <b>WebLLMによる文脈チェック結果</b>
-              <p class="mini" style="margin:8px 0 0;">顧客名や契約前情報と思われる注意候補が見つかりました。候補はユーザーがマスク対象に含めるか選べます。</p>
+              <p class="mini" style="margin:8px 0 0;">顧客名や契約前情報と思われる注意候補が見つかりました。候補はユーザーが安全化対象に含めるか選べます。</p>
             </div>
           </div>
           <div class="preview mono">

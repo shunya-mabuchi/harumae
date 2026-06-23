@@ -65,7 +65,7 @@ describe("demoMasking", () => {
     expect(viewModel.maskedText).toBe("連絡 [メールアドレス] [組織名]向け提案");
   });
 
-  it("検出済みでもマスク対象が未選択なら元テキストを返す", () => {
+  it("検出済みでも安全化対象が未選択なら元テキストを返す", () => {
     const inputText = "連絡 taro@example.com";
     const viewModel = createDemoMaskingViewModel({
       inputText,

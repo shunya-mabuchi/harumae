@@ -13,7 +13,7 @@ import { MaskResult } from "./MaskResult";
 
 const workflowSteps = [
   { label: "1", title: "サンプルを入れる", text: "拡張の動きをページ上で先に確認できます" },
-  { label: "2", title: "候補を確認", text: "検出項目ごとにマスク対象を選べます" },
+  { label: "2", title: "候補を確認", text: "検出項目ごとに安全化対象を選べます" },
   { label: "3", title: "安全化結果を見る", text: "実際の拡張では貼り付け前に同じ判断をします" }
 ];
 
@@ -91,7 +91,7 @@ export function DemoCard({
             <h2 id="demo-heading" className="text-3xl font-black leading-tight text-ink md:text-5xl">貼り付け前チェックの動きを試す</h2>
             <p className="mt-4 max-w-3xl text-base leading-7 text-muted md:text-lg">
               本番の体験はChrome拡張として、対象サイトの入力欄に貼り付ける直前に表示されます。
-              ここでは同じ検出エンジンを使って、候補選択とマスキングの流れだけをブラウザ上で確認できます。
+              ここでは同じ検出エンジンを使って、候補選択と安全化の流れだけをブラウザ上で確認できます。
             </p>
           </div>
           <div className="grid gap-2 rounded-card border border-line bg-white/75 p-3 shadow-soft">

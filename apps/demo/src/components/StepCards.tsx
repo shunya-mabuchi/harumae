@@ -29,7 +29,7 @@ const steps = [
   {
     label: "5. 選んで貼る",
     title: "ユーザーが最終判断",
-    text: "どれをマスクするか、貼り付けを続けるかはユーザーが選べます。",
+    text: "どれを安全化するか、貼り付けを続けるかはユーザーが選べます。",
     icon: LockKeyhole
   }
 ];
@@ -41,7 +41,7 @@ export function StepCards() {
         <SectionHeading
           eyebrow="Chrome拡張としての使い方"
           title="本体は、AIサービス上で動く貼り付け前チェックです。"
-          description="紹介ページのデモは体験用です。実際には対象サイトの入力欄に貼り付ける瞬間に、確認とマスキングの選択肢を表示します。"
+          description="紹介ページのデモは体験用です。実際には対象サイトの入力欄に貼り付ける瞬間に、確認と安全化の選択肢を表示します。"
         />
         <div className="grid gap-3 md:grid-cols-5">
           {steps.map((step) => {

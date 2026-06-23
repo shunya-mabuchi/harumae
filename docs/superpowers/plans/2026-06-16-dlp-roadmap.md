@@ -146,7 +146,7 @@ export interface SiteAdapter {
 - Test: `packages/llm/tests/llm.test.ts`
 
 - [x] WebLLM内部指示は日本語プロンプトをベースにし、文脈リスク候補のJSONだけを返すようにする。
-- [x] `ContextRiskCandidate`をFindingへ変換し、ユーザーがマスク対象に含めるか確認できるようにする。
+- [x] `ContextRiskCandidate`をFindingへ変換し、ユーザーが安全化対象に含めるか確認できるようにする。
 - [x] 不正JSON時は本文を含めず、既存の日本語エラー分類へ流す。
 - [x] 敬称つき人名、候補者名、Project形式の案件名をローカル補助候補として追加する。
 - [x] safe_prompt生成、Minimize、依頼文自動生成UIは精度不足のため削除する。

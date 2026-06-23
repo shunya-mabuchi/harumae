@@ -10,7 +10,7 @@ describe("createPasteReviewFindingView", () => {
       riskBadgeClassName: "review-badge review-badge-high",
       riskBadgeText: "危険度: 高",
       sourceLabel: "ルール",
-      selectionLabel: "マスク対象"
+      selectionLabel: "安全化対象"
     });
   });
 
@@ -21,7 +21,7 @@ describe("createPasteReviewFindingView", () => {
       riskBadgeClassName: "review-badge review-badge-medium",
       riskBadgeText: "危険度: 中",
       sourceLabel: "AI候補",
-      selectionLabel: "マスク対象外"
+      selectionLabel: "安全化対象外"
     });
   });
 });

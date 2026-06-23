@@ -47,7 +47,7 @@ function strongestRisk(summary: DetectionSummary): RiskLevel {
 function statusCopy(summary: DetectionSummary): RiskSummaryStatus {
   if (summary.critical > 0 || summary.high > 0) {
     return {
-      label: "要マスク",
+      label: "要安全化",
       text: "秘密情報や個人情報の可能性があります。送る前に対象を確認してください。"
     };
   }

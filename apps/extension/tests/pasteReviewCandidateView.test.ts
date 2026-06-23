@@ -10,7 +10,7 @@ describe("createPasteReviewCandidateView", () => {
       riskBadgeClassName: "review-badge review-badge-medium",
       riskBadgeText: "危険度: 中",
       confidenceText: "confidence: 0.88",
-      selectionLabel: "マスク対象"
+      selectionLabel: "安全化対象"
     });
   });
 
@@ -24,7 +24,7 @@ describe("createPasteReviewCandidateView", () => {
       riskBadgeClassName: "review-badge review-badge-high",
       riskBadgeText: "危険度: 高",
       confidenceText: "confidence: 0.70",
-      selectionLabel: "マスク対象外"
+      selectionLabel: "安全化対象外"
     });
   });
 });

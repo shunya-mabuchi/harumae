@@ -104,7 +104,7 @@ describe("pasteReviewListRenderers", () => {
     const text = joinedText(container);
     expect(text).toContain("メールアドレス");
     expect(text).toContain("taro@example.com");
-    expect(text).toContain("マスク対象");
+    expect(text).toContain("安全化対象");
 
     const checkbox = allElements(container).find((element) => element.tagName === "input");
     expect(checkbox?.checked).toBe(true);
@@ -131,7 +131,7 @@ describe("pasteReviewListRenderers", () => {
     expect(text).toContain("人名候補");
     expect(text).toContain("山田花子さん");
     expect(text).toContain("confidence: 0.86");
-    expect(text).toContain("マスク対象外");
+    expect(text).toContain("安全化対象外");
 
     const checkbox = allElements(container).find((element) => element.tagName === "input");
     expect(checkbox?.checked).toBe(false);

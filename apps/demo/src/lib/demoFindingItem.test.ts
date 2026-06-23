@@ -30,12 +30,12 @@ describe("createDemoFindingItemViewModel", () => {
       riskBadgeText: "危険度: 高",
       riskBadgeClassName: "rounded-card border px-2 py-1 text-xs font-bold border-rose-200 bg-rose-50 text-rose-700",
       sourceLabel: "ルール",
-      selectionLabel: "マスク対象",
+      selectionLabel: "安全化対象",
       selectionClassName: "text-xs font-black text-leaf"
     });
   });
 
-  it("AI候補由来の対象外検出項目を表示用に変換する", () => {
+  it("AI候補由来の安全化対象外検出項目を表示用に変換する", () => {
     expect(
       createDemoFindingItemViewModel(
         finding({
@@ -53,7 +53,7 @@ describe("createDemoFindingItemViewModel", () => {
       riskBadgeText: "危険度: 中",
       riskBadgeClassName: "rounded-card border px-2 py-1 text-xs font-bold border-amber-200 bg-amber-50 text-amber-800",
       sourceLabel: "AI候補",
-      selectionLabel: "対象外",
+      selectionLabel: "安全化対象外",
       selectionClassName: "text-xs font-black text-muted"
     });
   });

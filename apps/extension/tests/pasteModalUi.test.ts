@@ -70,7 +70,7 @@ describe("paste review modal UI", () => {
     expect(pasteReviewModeForAction("sanitize_required")).toBe("paste_guard");
   });
 
-  it("AI文脈チェック確認だけマスク対象が0件なら実行ボタンを無効にする", () => {
+  it("AI文脈チェック確認だけ安全化対象が0件なら実行ボタンを無効にする", () => {
     expect(shouldDisablePasteReviewMaskAction("default", 0)).toBe(false);
     expect(shouldDisablePasteReviewMaskAction("paste_guard", 0)).toBe(false);
     expect(shouldDisablePasteReviewMaskAction("context_check", 0)).toBe(true);

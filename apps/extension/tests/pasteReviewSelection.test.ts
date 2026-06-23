@@ -9,7 +9,7 @@ import {
 import { buildContextRiskCandidate, buildFinding } from "./testBuilders";
 
 describe("pasteReviewSelection", () => {
-  it("ルール検出項目は初期状態ですべてマスク対象にする", () => {
+  it("ルール検出項目は初期状態ですべて安全化対象にする", () => {
     const findings = [buildFinding({ id: "a" }), buildFinding({ id: "b" })];
 
     const selectedIds = createInitialSelectedFindingIds(findings);
@@ -28,7 +28,7 @@ describe("pasteReviewSelection", () => {
     expect([...selectedIds]).toEqual(["high"]);
   });
 
-  it("選択されたルール検出項目とLLM候補だけをマスク対象Findingに変換する", () => {
+  it("選択されたルール検出項目とLLM候補だけを安全化対象Findingに変換する", () => {
     const input = "taro@example.com と Project Blue を外部AIに貼る前に確認します。";
     const ruleFindings = [
       buildFinding({ id: "email", start: 0, end: 16, text: "taro@example.com" }),
