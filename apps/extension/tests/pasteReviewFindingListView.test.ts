@@ -38,7 +38,7 @@ describe("createPasteReviewFindingListView", () => {
       message: "外部へ貼り付ける前に確認したい情報です。",
       riskBadgeText: "危険度: 高",
       sourceLabel: "ルール",
-      selectionLabel: "マスク対象"
+      selectionLabel: "安全化対象"
     });
     expect(view.items[1]).toMatchObject({
       id: "finding-2",
@@ -47,7 +47,7 @@ describe("createPasteReviewFindingListView", () => {
       text: "A社",
       riskBadgeText: "危険度: 中",
       sourceLabel: "AI候補",
-      selectionLabel: "マスク対象外"
+      selectionLabel: "安全化対象外"
     });
   });
 });

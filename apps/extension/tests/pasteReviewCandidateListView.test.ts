@@ -31,7 +31,7 @@ describe("createPasteReviewCandidateListView", () => {
       reason: "採用文脈に含まれる個人名候補です。",
       riskBadgeText: "危険度: 中",
       confidenceText: "confidence: 0.88",
-      selectionLabel: "マスク対象"
+      selectionLabel: "安全化対象"
     });
     expect(view.items[1]).toMatchObject({
       id: "candidate-2",
@@ -39,7 +39,7 @@ describe("createPasteReviewCandidateListView", () => {
       surface: "Project Blue Bridge",
       riskBadgeText: "危険度: 低",
       confidenceText: "confidence: 0.70",
-      selectionLabel: "マスク対象外"
+      selectionLabel: "安全化対象外"
     });
   });
 });

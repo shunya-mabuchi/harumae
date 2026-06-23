@@ -83,7 +83,7 @@ describe("createDemoDetectionResultsViewModel", () => {
     expect(view.totalText).toBe("1件");
     expect(view.categoryEmptyMessage).toBeNull();
     expect(view.findingsEmptyMessage).toBeNull();
-    expect(view.riskSummary.status.label).toBe("要マスク");
+    expect(view.riskSummary.status.label).toBe("要安全化");
     expect(view.riskSummary.categories).toEqual([{ label: "メールアドレス", count: 1 }]);
     expect(view.riskCountTiles.map((tile) => [tile.key, tile.count])).toEqual([
       ["high", 1],

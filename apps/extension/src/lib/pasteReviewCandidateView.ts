@@ -16,6 +16,6 @@ export function createPasteReviewCandidateView(
     riskBadgeClassName: `review-badge review-badge-${candidate.riskLevel}`,
     riskBadgeText: `危険度: ${pasteReviewRiskLabel[candidate.riskLevel]}`,
     confidenceText: `confidence: ${candidate.confidence.toFixed(2)}`,
-    selectionLabel: selected ? "マスク対象" : "マスク対象外"
+    selectionLabel: selected ? "安全化対象" : "安全化対象外"
   };
 }

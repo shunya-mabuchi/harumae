@@ -29,7 +29,7 @@ export function MaskResult({
       </div>
       <pre
         className="flex-1 whitespace-pre-wrap break-words rounded-card border border-ink/10 bg-[#15191c] p-4 text-sm leading-6 text-[#e9eee9] shadow-inner"
-        aria-label="マスキング後テキスト"
+        aria-label="安全化後テキスト"
       >
         {maskedText || "検出を実行すると、ここに安全化後のテキストが表示されます。"}
       </pre>

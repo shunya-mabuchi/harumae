@@ -13,6 +13,6 @@ export function createPasteReviewFindingView(finding: Finding, selected: boolean
     riskBadgeClassName: `review-badge review-badge-${finding.riskLevel}`,
     riskBadgeText: `危険度: ${pasteReviewRiskLabel[finding.riskLevel]}`,
     sourceLabel: finding.source === "llm" ? "AI候補" : "ルール",
-    selectionLabel: selected ? "マスク対象" : "マスク対象外"
+    selectionLabel: selected ? "安全化対象" : "安全化対象外"
   };
 }

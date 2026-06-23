@@ -28,7 +28,7 @@ function finding(id: string, label: string): Finding {
 }
 
 describe("demoRiskSummary", () => {
-  it("重大・高リスクがあると要マスク表示と高いメーター値を返す", () => {
+  it("重大・高リスクがあると要安全化表示と高いメーター値を返す", () => {
     const viewModel = createRiskSummaryViewModel(
       { ...baseSummary, total: 3, critical: 1, high: 1, medium: 1 },
       [finding("email", "メールアドレス")]
@@ -36,7 +36,7 @@ describe("demoRiskSummary", () => {
 
     expect(viewModel.meterRisk).toBe("critical");
     expect(viewModel.meterWidth).toBe(94);
-    expect(viewModel.status.label).toBe("要マスク");
+    expect(viewModel.status.label).toBe("要安全化");
   });
 
   it("中リスクのみなら確認推奨として扱う", () => {

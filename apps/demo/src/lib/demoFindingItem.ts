@@ -24,7 +24,7 @@ export function createDemoFindingItemViewModel(finding: Finding, selected: boole
     riskBadgeText: `危険度: ${riskLabel[finding.riskLevel]}`,
     riskBadgeClassName: `rounded-card border px-2 py-1 text-xs font-bold ${riskTone[finding.riskLevel]}`,
     sourceLabel: finding.source === "llm" ? "AI候補" : "ルール",
-    selectionLabel: selected ? "マスク対象" : "対象外",
+    selectionLabel: selected ? "安全化対象" : "安全化対象外",
     selectionClassName: `text-xs font-black ${selected ? "text-leaf" : "text-muted"}`
   };
 }
