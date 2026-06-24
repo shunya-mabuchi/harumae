@@ -73,6 +73,26 @@ describe("evaluateDlpPolicy", () => {
     expect(decision.requiresSanitization).toBe(true);
   });
 
+  it("criticalは独立したblockではなく安全化必須の最重度として扱う", () => {
+    const decision = evaluateDlpPolicy([
+      finding({
+        id: "root-secret:1",
+        ruleId: "production_root_secret",
+        riskLevel: "critical",
+        category: "secret",
+        label: "本番秘密鍵"
+      }),
+      finding({ id: "url:1", ruleId: "url", riskLevel: "medium", category: "url", label: "URL" })
+    ]);
+
+    expect(decision.action).toBe("sanitize_required");
+    expect(decision.severity).toBe("critical");
+    expect(decision.requiredFindingIds).toEqual(["root-secret:1"]);
+    expect(decision.optionalFindingIds).toEqual(["url:1"]);
+    expect(decision.canSendRaw).toBe(false);
+    expect(decision.requiresSanitization).toBe(true);
+  });
+
   it("秘密情報保護の対象は安全化必須にする", () => {
     const detection = detectSensitiveText("AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE");
     const decision = evaluateDlpPolicy(detection.findings);
