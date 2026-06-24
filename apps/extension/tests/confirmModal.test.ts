@@ -48,14 +48,16 @@ describe("confirmModal helpers", () => {
 
   it("exports style tokens and protects disabled hover states", () => {
     const stylesSource = readFileSync(new URL("../src/ui/styles.ts", import.meta.url), "utf8");
+    const sharedStylesSource = readFileSync(new URL("../src/lib/sharedModalCss.ts", import.meta.url), "utf8");
+    const combinedStylesSource = `${stylesSource}\n${sharedStylesSource}`;
 
     expect(confirmModalTokens.colors.accent).toBe("#0f9f69");
     expect(confirmModalTokens.colors.surface).toBe("#ffffff");
-    expect(stylesSource).toContain(".amc-button:disabled:hover");
-    expect(stylesSource).toContain(".amc-primary:disabled:hover");
-    expect(stylesSource).toContain(".amc-secondary:disabled:hover");
-    expect(stylesSource).toContain("background: ${colors.surface};");
-    expect(stylesSource).toContain("background: ${colors.accent};");
+    expect(combinedStylesSource).toContain(".${prefix}-button:disabled:hover");
+    expect(combinedStylesSource).toContain(".${prefix}-primary:disabled:hover");
+    expect(combinedStylesSource).toContain(".${prefix}-secondary:disabled:hover");
+    expect(combinedStylesSource).toContain("background: ${colors.surface};");
+    expect(combinedStylesSource).toContain("background: ${colors.accent};");
   });
 
   it("groups findings by category", () => {
