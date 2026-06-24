@@ -53,9 +53,11 @@ describe("paste review modal UI", () => {
     expect(modalSource).not.toContain("const css = `");
 
     const stylesSource = readFileSync(stylesPath, "utf8");
-    expect(stylesSource).toContain(".hm-primary:disabled:hover");
-    expect(stylesSource).toContain("background: ${colors.accent};");
-    expect(stylesSource).toContain(".hm-secondary:disabled:hover");
+    const sharedStylesSource = readFileSync(resolve(process.cwd(), "src/lib/sharedModalCss.ts"), "utf8");
+    const combinedStylesSource = `${stylesSource}\n${sharedStylesSource}`;
+    expect(combinedStylesSource).toContain(".${prefix}-primary:disabled:hover");
+    expect(combinedStylesSource).toContain("background: ${colors.accent};");
+    expect(combinedStylesSource).toContain(".${prefix}-secondary:disabled:hover");
   });
 
   it("モーダルに最低限のARIA属性とlive regionを持たせる", () => {
