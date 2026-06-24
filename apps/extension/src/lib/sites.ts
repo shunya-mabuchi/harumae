@@ -1,4 +1,4 @@
-export type SiteId = "chatgpt" | "openai_chat" | "claude" | "gemini";
+export type SiteId = "chatgpt" | "openai_chat" | "claude" | "gemini" | "perplexity";
 
 export interface TargetSite {
   id: SiteId;
@@ -31,6 +31,12 @@ export const targetSites: TargetSite[] = [
     label: "Gemini",
     hostnames: ["gemini.google.com"],
     matches: ["https://gemini.google.com/*"]
+  },
+  {
+    id: "perplexity",
+    label: "Perplexity",
+    hostnames: ["www.perplexity.ai", "perplexity.ai"],
+    matches: ["https://www.perplexity.ai/*", "https://perplexity.ai/*"]
   }
 ];
 

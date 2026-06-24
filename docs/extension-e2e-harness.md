@@ -4,14 +4,14 @@ AIまえチェックはChrome拡張が本体です。ユニットテスト、デ
 
 この文書は、実サイトのログイン状態に依存しない自動E2Eの範囲と、手動QAとの境界を定義します。
 
-SiteAdapterの責務、ChatGPT / Claude / GeminiごとのDOM差分、サイト別確認項目は [SiteAdapter契約とE2E確認項目](site-adapter-contract.md) にまとめています。
+SiteAdapterの責務、ChatGPT / Claude / Gemini / PerplexityごとのDOM差分、サイト別確認項目は [SiteAdapter契約とE2E確認項目](site-adapter-contract.md) にまとめています。
 
 ## 方針
 
 - 実サイトのログイン状態に依存しない
 - ユーザー本文、実APIキー、実トークン、実秘密情報を使わない
 - ローカルの模擬composerページでpaste/submitを検証する
-- ChatGPT / Claude / Geminiの実サイト確認は手動QAとして残す
+- ChatGPT / Claude / Gemini / Perplexityの実サイト確認は手動QAとして残す
 - 0.1.1のZIP再提出前は、残Issueをすべて解消してから最終buildとpackageを行う
 - E2E用のmanifest変更を、Chrome Web Store提出用ZIPへ混入させない
 
@@ -47,7 +47,7 @@ const context = await chromium.launchPersistentContext(userDataDir, {
 - 送信ボタン
 - Enter送信
 - Cmd+Enter / Ctrl+Enter送信
-- ChatGPT風、Claude風、Gemini風の最小DOM差分
+- ChatGPT風、Claude風、Gemini風、Perplexity風の最小DOM差分
 
 確認する操作:
 
@@ -62,7 +62,7 @@ const context = await chromium.launchPersistentContext(userDataDir, {
 
 ## テスト専用match pattern
 
-現在のリリース用manifestは、対象サイトをChatGPT / Claude / Geminiに限定しています。初期実装では `<all_urls>` を要求しません。
+現在のリリース用manifestは、対象サイトをChatGPT / Claude / Gemini / Perplexityに限定しています。`<all_urls>` を要求しません。
 
 ローカル模擬ページでE2Eを行うには、テスト専用buildだけで `http://127.0.0.1:<port>/*` または `http://localhost:<port>/*` をcontent scriptのmatchに追加する必要があります。
 
@@ -90,7 +90,7 @@ const context = await chromium.launchPersistentContext(userDataDir, {
 
 ### 自動化しない
 
-- ChatGPT / Claude / Geminiへのログイン
+- ChatGPT / Claude / Gemini / Perplexityへのログイン
 - 実サイトの本番DOMに依存した完全E2E
 - WebLLM実モデルロード
 - 実APIキー、実トークン、実個人情報を使うテスト
@@ -103,7 +103,7 @@ const context = await chromium.launchPersistentContext(userDataDir, {
 | ユニットテスト | 検出、マスク、ポリシー、UI状態の安定性 | packages / extension内部 | 実行する |
 | デモE2E | LP兼ミニデモの体験確認 | `apps/demo` | 実行する |
 | 拡張E2Eハーネス | 実拡張を読み込んだpaste/submit確認 | ローカル模擬composer | 段階的に導入 |
-| 実サイト手動QA | 対象サイトDOMと実操作の確認 | ChatGPT / Claude / Gemini | CIには載せない |
+| 実サイト手動QA | 対象サイトDOMと実操作の確認 | ChatGPT / Claude / Gemini / Perplexity | CIには載せない |
 | WebLLM実機確認 | WebGPU、モデル取得、保存領域の確認 | 実ブラウザ/実端末 | CIには載せない |
 
 実サイト手動QAは [extension-site-qa.md](extension-site-qa.md) に残します。WebLLM実機確認は [webllm-real-device-check.md](webllm-real-device-check.md) と [webllm-compatibility-matrix.md](webllm-compatibility-matrix.md) に記録します。

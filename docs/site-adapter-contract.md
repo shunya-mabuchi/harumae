@@ -2,11 +2,11 @@
 
 最終更新日: 2026-06-23
 
-この文書は、AIまえチェックのChrome拡張で ChatGPT / Claude / Gemini を継続的に保守するためのSiteAdapter契約と、サイト別確認項目を定義します。
+この文書は、AIまえチェックのChrome拡張で ChatGPT / Claude / Gemini / Perplexity を継続的に保守するためのSiteAdapter契約と、サイト別確認項目を定義します。
 
 AIまえチェックでは、DLP判定、マスキング、安全化、policy判定は共通ロジックとして扱います。対象サイトごとに変わるDOM探索、送信ボタン検出、入力欄の読み取り・置換、送信操作の再実行はSiteAdapterの責務として扱います。
 
-Perplexityなどの追加サイトは後続adapterで対応します。初期対象サイトを増やす場合も、`<all_urls>` に頼らず、必要なhost permissionだけを追加します。
+対象サイトを増やす場合も、`<all_urls>` に頼らず、必要なhost permissionだけを追加します。
 
 ## 現在の実装位置
 
@@ -14,6 +14,7 @@ Perplexityなどの追加サイトは後続adapterで対応します。初期対
 - ChatGPT adapter: `apps/extension/src/content/adapters/chatgptAdapter.ts`
 - Claude adapter: `apps/extension/src/content/adapters/claudeAdapter.ts`
 - Gemini adapter: `apps/extension/src/content/adapters/geminiAdapter.ts`
+- Perplexity adapter: `apps/extension/src/content/adapters/perplexityAdapter.ts`
 - hostnameからadapterを選ぶ処理: `apps/extension/src/content/adapters/index.ts`
 - 送信前intercept: `apps/extension/src/content/dom/sendInterceptor.ts`
 - paste時の共通editable処理: `apps/extension/src/lib/dom.ts`
@@ -26,7 +27,7 @@ Perplexityなどの追加サイトは後続adapterで対応します。初期対
 
 ```ts
 export interface SiteAdapter {
-  id: "chatgpt" | "claude" | "gemini";
+  id: "chatgpt" | "claude" | "gemini" | "perplexity";
   findEditor(root: ParentNode): EditableTarget | null;
   findSendButton(root: ParentNode): HTMLElement | null;
   isSendKeyboardEvent(event: KeyboardEvent): boolean;
@@ -167,7 +168,7 @@ adapter観点:
 
 - [ ] 拡張機能を再読み込み後、対象ページも再読み込みした
 - [ ] 対象hostだけでcontent scriptが動く
-- [ ] `<all_urls>`、localhost、Perplexityがリリースmanifestへ混入していない
+- [ ] `<all_urls>`、localhostがリリースmanifestへ混入していない
 - [ ] Options Pageで対象サイトON/OFFが効く
 - [ ] 通常の入力欄を検出できる
 - [ ] password / email / tel / number / credit card系inputには介入しない
@@ -184,6 +185,21 @@ adapter観点:
 - [ ] 安全化後に再スキャンされ、秘密情報保護対象が残る場合は送信されない
 - [ ] WebLLMが失敗してもルールベース検出と安全化は利用できる
 - [ ] エラー表示や診断メモに本文が含まれない
+
+### Perplexity
+
+対象:
+
+- `https://www.perplexity.ai/*`
+- `https://perplexity.ai/*`
+
+確認項目:
+
+- 貼り付け前確認
+- 送信前確認
+- Enter送信、送信ボタン押下
+- 安全化後にPerplexityの入力欄が置換され、送信内容へ反映される
+- Perplexity側のUI変更で検索モードや添付ボタンが近くにある場合、実際の送信ボタンだけを押す
 
 ## 新しいSiteAdapter追加手順
 
@@ -210,7 +226,7 @@ adapter観点:
 
 - ユニットテスト: adapter mapping、送信キー判定、bypass、設定ON/OFF、モーダル状態を確認します。
 - 拡張E2Eハーネス: ローカル模擬composerでpaste、送信前確認、安全化、キャンセルを確認します。
-- 実サイト手動QA: ChatGPT / Claude / Gemini の実DOM、実送信ボタン、Reactイベント反映、WebLLM表示を確認します。
+- 実サイト手動QA: ChatGPT / Claude / Gemini / Perplexity の実DOM、実送信ボタン、Reactイベント反映、WebLLM表示を確認します。
 
 実サイトのログイン、A/Bテスト、DOM更新、利用規約、ネットワーク状態に依存する確認はCIに載せず、手動QAとして記録します。手動QAの記録には、貼り付け本文、送信本文、検出文字列、placeholderMap、現在のページURLを含めません。
 

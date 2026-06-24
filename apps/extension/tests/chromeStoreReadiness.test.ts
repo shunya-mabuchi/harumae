@@ -46,6 +46,7 @@ describe("Chrome Web Store readiness", () => {
     expect(listing.singlePurpose).toContain("AIまえチェック");
     expect(listing.permissionJustifications.storage).toContain("設定");
     expect(listing.permissionJustifications.host_permissions).toContain("ChatGPT");
+    expect(listing.permissionJustifications.host_permissions).toContain("Perplexity");
     expect(listing.permissionJustifications.host_permissions).toContain("<all_urls> は要求していません");
     expect(listing.remoteCode.usesRemoteCode).toBe(false);
     expect(listing.remoteCode.explanation).toContain("外部から任意のコードを取得して実行しません");

@@ -5,7 +5,7 @@ AIまえチェックのOptions Pageは、Chrome拡張の動作をユーザーが
 ## 設定グループ
 
 - 基本設定: 拡張機能全体の有効/無効
-- 対象サイト: ChatGPT / Claude / GeminiごとのON/OFF
+- 対象サイト: ChatGPT / Claude / Gemini / PerplexityごとのON/OFF
 - 検出ルール: ルールベース検出ごとのON/OFF
 - WebLLM: AI文脈チェックの有効/無効、モデルID、手動/自動実行
 - 設定の初期化: `chrome.storage.local` に保存された設定キーの削除

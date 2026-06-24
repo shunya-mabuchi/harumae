@@ -143,11 +143,13 @@ describe("contentReview", () => {
     expect(createSendReviewRequest("予算は300万円です。", context)).not.toBeNull();
   });
 
-  it("limits site adapters to ChatGPT, Claude, and Gemini", () => {
+  it("limits site adapters to configured target sites", () => {
     expect(adapterForHostname("chatgpt.com")?.id).toBe("chatgpt");
     expect(adapterForHostname("chat.openai.com")?.id).toBe("chatgpt");
     expect(adapterForHostname("claude.ai")?.id).toBe("claude");
     expect(adapterForHostname("gemini.google.com")?.id).toBe("gemini");
+    expect(adapterForHostname("www.perplexity.ai")?.id).toBe("perplexity");
+    expect(adapterForHostname("perplexity.ai")?.id).toBe("perplexity");
     expect(adapterForHostname("example.com")).toBeNull();
   });
 });

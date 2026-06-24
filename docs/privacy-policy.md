@@ -2,7 +2,7 @@
 
 最終更新日: 2026-06-16
 
-AIまえチェックは、ChatGPT、Claude、Geminiなどに文章を送る前に、個人情報・秘密情報・APIキーなどの消し忘れに気づくためのChrome拡張です。
+AIまえチェックは、ChatGPT、Claude、Gemini、Perplexityなどに文章を送る前に、個人情報・秘密情報・APIキーなどの消し忘れに気づくためのChrome拡張です。
 
 ## 基本方針
 
@@ -68,8 +68,10 @@ AIまえチェックは、初期対象サイトとして次のサイトでのみ
 - `https://chat.openai.com/*`
 - `https://claude.ai/*`
 - `https://gemini.google.com/*`
+- `https://www.perplexity.ai/*`
+- `https://perplexity.ai/*`
 
-初期実装では `<all_urls>` を要求しません。
+現在の実装では `<all_urls>` を要求しません。
 
 利用するChrome権限:
 

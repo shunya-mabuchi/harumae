@@ -31,8 +31,9 @@
   - `https://chat.openai.com/*`
   - `https://claude.ai/*`
   - `https://gemini.google.com/*`
+  - `https://www.perplexity.ai/*`
+  - `https://perplexity.ai/*`
 - `<all_urls>` は要求しない
-- Perplexityは後続adapter扱い
 
 ## Chrome Web Store掲載文
 
@@ -52,13 +53,13 @@ Developer Dashboardへ入力する掲載情報の原本は [chrome-web-store-lis
 
 ### Host permissions
 
-ChatGPT、Claude、Gemini上の入力欄で貼り付け操作や送信前操作を検知し、ユーザーに確認画面を表示するために使用します。対象サイトは初期対応サイトに限定し、`<all_urls>` は要求しません。
+ChatGPT、Claude、Gemini、Perplexity上の入力欄で貼り付け操作や送信前操作を検知し、ユーザーに確認画面を表示するために使用します。対象サイトは対応サイトに限定し、`<all_urls>` は要求しません。
 
 ## Privacy practices入力方針
 
 ### Single purpose
 
-AIまえチェックは、ChatGPT、Claude、Geminiなどに文章を貼り付ける前・送信する前に、個人情報、秘密情報、APIキーなどの消し忘れをブラウザ内で確認し、安全化候補を提示するための拡張機能です。貼り付け本文や送信本文は永続保存せず、外部LLM APIや開発者のサーバーへ本文を送信しません。
+AIまえチェックは、ChatGPT、Claude、Gemini、Perplexityなどに文章を貼り付ける前・送信する前に、個人情報、秘密情報、APIキーなどの消し忘れをブラウザ内で確認し、安全化候補を提示するための拡張機能です。貼り付け本文や送信本文は永続保存せず、外部LLM APIや開発者のサーバーへ本文を送信しません。
 
 ### Remote code
 
@@ -162,7 +163,7 @@ pnpm qa:chrome-store
 - [ ] `apps/extension/.output/chrome-mv3/manifest.json` の名称・説明・権限を確認する
 - [ ] 権限・CSP・依存関係監査 [extension-security-audit.md](extension-security-audit.md) を確認する
 - [ ] `<all_urls>` を要求していない
-- [ ] 対象サイトがChatGPT / Claude / Geminiに限定されている
+- [ ] 対象サイトがChatGPT / Claude / Gemini / Perplexityに限定されている
 - [ ] READMEとプライバシー方針に、本文を保存・送信しないことが書かれている
 - [ ] WebLLMモデル取得が発生する場合があることを書いている
 - [ ] 外部LLM APIを使わないことを書いている
@@ -174,6 +175,7 @@ pnpm qa:chrome-store
 - [ ] ChatGPTでpaste検知を確認する
 - [ ] Claudeでpaste検知を確認する
 - [ ] Geminiでpaste検知を確認する
+- [ ] Perplexityでpaste検知を確認する
 - [ ] 送信前確認モーダルを確認する
 - [ ] high / critical / 秘密情報保護の対象が安全化なしでは送信不可になることを確認する
 - [ ] mediumが詳細確認から許可可能であることを確認する

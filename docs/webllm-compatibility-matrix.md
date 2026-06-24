@@ -107,7 +107,7 @@ fallback候補:
 
 ## 手動確認フロー
 
-1. ChatGPT / Claude / Geminiのいずれかを開く
+1. ChatGPT / Claude / Gemini / Perplexityのいずれかを開く
 2. ダミー文だけを入力する
 3. ルールベース検出が動くことを確認する
 4. `AIチェック` または `AI文脈チェックも実行` を押す

@@ -6,7 +6,9 @@ const targetMatches = [
   "https://chatgpt.com/*",
   "https://chat.openai.com/*",
   "https://claude.ai/*",
-  "https://gemini.google.com/*"
+  "https://gemini.google.com/*",
+  "https://www.perplexity.ai/*",
+  "https://perplexity.ai/*"
 ];
 
 export default defineConfig({

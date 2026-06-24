@@ -194,7 +194,7 @@ export function OptionsApp() {
             <div>
               <h2 className="text-xl font-bold tracking-normal text-ink">はじめに</h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-stone-600">
-                AIまえチェックの本体はChrome拡張です。ChatGPT、Claude、Geminiで貼り付け前・送信前に確認モーダルを表示します。
+                AIまえチェックの本体はChrome拡張です。ChatGPT、Claude、Gemini、Perplexityで貼り付け前・送信前に確認モーダルを表示します。
               </p>
             </div>
             <p className="rounded-md border border-line bg-white px-3 py-2 text-sm font-semibold text-leaf">初回インストール後に表示されます</p>
@@ -202,7 +202,7 @@ export function OptionsApp() {
           <div className="mt-4 grid gap-3 md:grid-cols-3">
             <OnboardingStep
               title="1. 対象サイトを確認"
-              body="ChatGPT、Claude、Geminiが初期対象です。必要に応じて下の対象サイト設定でON/OFFできます。"
+              body="ChatGPT、Claude、Gemini、Perplexityが対象です。必要に応じて下の対象サイト設定でON/OFFできます。"
             />
             <OnboardingStep
               title="2. いつチェックされるか"
