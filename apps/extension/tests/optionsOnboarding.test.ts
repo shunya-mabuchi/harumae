@@ -7,7 +7,7 @@ describe("Options Page onboarding", () => {
     const source = readFileSync(resolve(process.cwd(), "entrypoints/options/OptionsApp.tsx"), "utf8");
 
     expect(source).toContain("AIまえチェックの本体はChrome拡張です");
-    expect(source).toContain("ChatGPT、Claude、Gemini");
+    expect(source).toContain("ChatGPT、Claude、Gemini、Perplexity");
     expect(source).toContain("貼り付け前・送信前に確認モーダルを表示します");
     expect(source).toContain("WebLLMは手動実行が初期設定です");
     expect(source).toContain("初回利用時はローカル推論用モデルファイルの取得に時間がかかる場合があります");

@@ -54,7 +54,7 @@ for (const phrase of [
   "high / critical / 秘密情報保護対象",
   "textarea",
   "contenteditable",
-  "ChatGPT / Claude / Gemini",
+  "ChatGPT / Claude / Gemini / Perplexity",
   "実サイト手動QA",
   "WebLLM実モデルロード",
   "CIには載せない",

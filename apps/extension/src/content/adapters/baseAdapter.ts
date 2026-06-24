@@ -2,7 +2,7 @@ import type { EditableTarget } from "../../lib/dom";
 import { findFirstEditable, readEditableText, replaceEditableText } from "../dom/editorLocator";
 import { isDefaultSendKeyboardEvent } from "../dom/sendInterceptor";
 
-export type AdapterId = "chatgpt" | "claude" | "gemini";
+export type AdapterId = "chatgpt" | "claude" | "gemini" | "perplexity";
 
 export interface SiteAdapter {
   id: AdapterId;

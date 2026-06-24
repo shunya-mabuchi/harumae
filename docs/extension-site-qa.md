@@ -1,13 +1,13 @@
 # 実サイトQAチェックリスト
 
-このドキュメントは、AIまえチェックのChrome拡張を ChatGPT / Claude / Gemini 上で継続検証するための手順です。実在の個人情報、実APIキー、実トークン、実案件情報は使わず、必ずダミーデータだけで確認します。
+このドキュメントは、AIまえチェックのChrome拡張を ChatGPT / Claude / Gemini / Perplexity 上で継続検証するための手順です。実在の個人情報、実APIキー、実トークン、実案件情報は使わず、必ずダミーデータだけで確認します。
 
 ## 目的
 
 - 対象サイト上でpaste検知、送信前確認、マスク貼り付け、送信ブロックが動くことを確認する
 - WebLLMの実機動作、WebGPU非対応、モデル取得失敗時の表示を確認する
 - 対象サイトのDOM変更でadapterが壊れていないか確認する
-- Perplexityは後続adapterとして扱い、初期対象には含めない
+- Perplexityも対象サイトとして確認する
 
 SiteAdapterの責務、共通DLP処理との境界、新しいadapter追加手順は [SiteAdapter契約とE2E確認項目](site-adapter-contract.md) にまとめています。このQAでは、その契約に沿って入力欄検出、送信ボタン検出、送信キー、置換後のReact系UI反映を確認します。
 
@@ -37,9 +37,8 @@ Chromeで次を行います。
 - Manifest V3である
 - 拡張名と説明が日本語の公開前提文言である
 - 権限が `storage` のみである
-- host permissionsがChatGPT / Claude / Geminiに限定されている
+- host permissionsがChatGPT / Claude / Gemini / Perplexityに限定されている
 - `<all_urls>` を要求していない
-- Perplexityが初期host permissionに含まれていない
 - Content Scriptのmatchesが対象サイトに限定されている
 - WebLLM bridge用の `llm-worker.js` と `llm-bridge.html` がweb accessible resourcesに含まれている
 - 拡張アイコンがmanifestに設定されている
@@ -164,6 +163,24 @@ https://user:password@example.com/internal/proposal
 - [ ] AI文脈チェックを手動実行できる
 - [ ] キャンセル時に送信されない
 
+## Perplexity確認
+
+対象:
+
+- `https://www.perplexity.ai/*`
+- `https://perplexity.ai/*`
+
+確認:
+
+- [ ] 入力欄への貼り付けで確認モーダルが開く
+- [ ] 高リスクまたは秘密情報保護対象は、そのまま送信できない
+- [ ] 安全化後、Perplexityの入力欄が置換内容を認識する
+- [ ] 送信ボタン押下前に確認モーダルが開く
+- [ ] Enter送信または送信ボタン押下のどちらでも送信前確認が動く
+- [ ] 検索モード、添付、音声入力などの近接ボタンを誤クリックしない
+- [ ] AI文脈チェックを手動実行できる
+- [ ] キャンセル時に送信されない
+
 ## WebLLM実機確認
 
 通常環境:
@@ -219,5 +236,6 @@ WebGPU: adapterあり
 - [ ] ChatGPTのチェックリストを一通り確認した
 - [ ] Claudeのチェックリストを一通り確認した
 - [ ] Geminiのチェックリストを一通り確認した
+- [ ] Perplexityのチェックリストを一通り確認した
 - [ ] WebLLM通常環境、WebGPU非対応、モデル取得失敗時の表示を確認した
 - [ ] 失敗があれば、本文を含めずにIssue化した

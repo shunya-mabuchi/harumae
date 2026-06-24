@@ -7,7 +7,9 @@ const expectedTargetMatches = [
   "https://chatgpt.com/*",
   "https://chat.openai.com/*",
   "https://claude.ai/*",
-  "https://gemini.google.com/*"
+  "https://gemini.google.com/*",
+  "https://www.perplexity.ai/*",
+  "https://perplexity.ai/*"
 ];
 
 function fail(message) {
@@ -21,10 +23,6 @@ function sameMembers(actual, expected) {
 function assertNoUnexpectedHosts(hosts) {
   if (hosts.includes("<all_urls>")) {
     fail("<all_urls> must not be requested");
-  }
-
-  if (hosts.some((host) => host.includes("perplexity.ai"))) {
-    fail("Perplexity must remain a later adapter, not an initial host permission");
   }
 
   if (hosts.some((host) => host.includes("localhost") || host.includes("127.0.0.1"))) {
