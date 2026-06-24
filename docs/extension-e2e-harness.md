@@ -1,25 +1,23 @@
 # Chrome拡張E2E自動化ハーネス方針
 
-AIまえチェックはChrome拡張が本体です。ユニットテスト、デモE2E、manifest QAに加えて、実際の拡張を読み込んだ状態でpaste/submit/安全化モーダルを確認するE2Eハーネスを整備しています。
+AIまえチェックはChrome拡張が本体です。ユニットテスト、デモE2E、manifest QAに加えて、実際の拡張を読み込んだ状態でpaste検知、送信前確認、安全化して貼り付け、安全化して送信を確認するE2Eハーネスを用意しています。
 
-0.1.1時点で、ローカルの模擬composerページを使う最小ハーネスは実装済みです。実サイトログインやWebLLM実モデルロードには依存させず、Chrome Web Store提出用ZIPとも分離します。
+0.1.1時点で、ローカルの模擬composerページを使う最小ハーネスは実装済みです。実サイトのログイン状態に依存しないため、Chrome Web Store提出用ZIPやWebLLM実モデルロードとは切り離して確認できます。
 
-この文書は、実サイトのログイン状態に依存しない自動E2Eの範囲と、手動QAとの境界を定義します。
-
-SiteAdapterの責務、ChatGPT / Claude / Gemini / PerplexityごとのDOM差分、サイト別確認項目は [SiteAdapter契約とE2E確認項目](site-adapter-contract.md) にまとめています。
+SiteAdapterの責務、ChatGPT / Claude / Gemini / PerplexityごとのDOM差分、実サイト手動QAの観点は [SiteAdapter契約とE2E確認項目](site-adapter-contract.md) にまとめています。
 
 ## 方針
 
 - 実サイトのログイン状態に依存しない
-- ユーザー本文、実APIキー、実トークン、実秘密情報を使わない
-- ローカルの模擬composerページでpaste/submitを検証する
+- ユーザー本文、実APIキー、実トークン、実在する個人情報を使わない
+- ローカルの模擬composerページでpaste検知と送信前確認を検証する
 - ChatGPT / Claude / Gemini / Perplexityの実サイト確認は手動QAとして残す
 - 0.1.1のZIP再提出前は、残Issueをすべて解消してから最終buildとpackageを行う
-- E2E用のmanifest変更を、Chrome Web Store提出用ZIPへ混入させない
+- E2E専用buildのmanifest変更を、Chrome Web Store提出用ZIPへ混入させない
 
 ## Playwrightで拡張を読み込む方式
 
-PlaywrightでChrome拡張を読み込む場合は、永続コンテキストを使います。
+Playwrightでは永続コンテキストを使ってChrome拡張を読み込みます。
 
 ```ts
 const context = await chromium.launchPersistentContext(userDataDir, {
@@ -33,10 +31,10 @@ const context = await chromium.launchPersistentContext(userDataDir, {
 
 注意点:
 
-- MV3拡張は通常のheadless Chromiumでは制約があるため、まずheaded実行を前提にする
-- CIで実行する場合は、GitHub ActionsのLinux runnerでheaded相当の実行可否を検証する
-- extension IDは一時プロファイルやkey設定で変わる可能性があるため、テストではID固定に依存しすぎない
-- WebLLM実モデルロードはE2E必須条件にしない
+- MV3拡張は通常のheadless Chromiumで制約があるため、まずheaded実行を前提にします
+- CIで実行する場合は、GitHub Actions上のLinux runnerでheaded相当の実行が安定するかを別途確認します
+- extension IDは一時プロファイルやkey設定で変わる可能性があるため、テストではID固定に依存しすぎません
+- WebLLM実モデルロードはE2E必須条件にしません
 
 ## ローカル模擬ページ
 
@@ -46,10 +44,13 @@ const context = await chromium.launchPersistentContext(userDataDir, {
 
 - `textarea`
 - `contenteditable`
+- Lexical風の `data-lexical-editor="true"` editor
+- ProseMirror風の `.ProseMirror` editor
 - 送信ボタン
 - Enter送信
-- Cmd+Enter / Ctrl+Enter送信
-- ChatGPT風、Claude風、Gemini風、Perplexity風の最小DOM差分
+- Ctrl+Enter / Cmd+Enter送信
+- Shift+Enter / Alt+Enter / IME変換中Enterは送信扱いにしないケース
+- ChatGPT / Claude / Gemini / Perplexity風の最小DOM差分へ拡張しやすい構造
 
 確認する操作:
 
@@ -64,16 +65,16 @@ const context = await chromium.launchPersistentContext(userDataDir, {
 
 ## テスト専用match pattern
 
-現在のリリース用manifestは、対象サイトをChatGPT / Claude / Gemini / Perplexityに限定しています。`<all_urls>` を要求しません。
+現在のリリース用manifestは、対象サイトをChatGPT / Claude / Gemini / Perplexityに限定しています。`<all_urls>` は要求しません。
 
-ローカル模擬ページでE2Eを行うには、テスト専用buildだけで `http://127.0.0.1:<port>/*` または `http://localhost:<port>/*` をcontent scriptのmatchに追加する必要があります。
+ローカル模擬ページでE2Eを行うには、テスト専用buildだけで `http://127.0.0.1:<port>/*` または `http://localhost:<port>/*` をcontent scriptのmatchに追加します。
 
 この設定はリリース用manifestへ混入させません。
 
 守ること:
 
 - `pnpm qa:extension:manifest` はリリースbuildに `localhost` や `<all_urls>` が入っていないことを確認する
-- E2E専用buildは `EXTENSION_E2E=1` のような明示的な環境変数でだけ有効にする
+- E2E専用buildは `EXTENSION_E2E=1` の明示的な環境変数でだけ有効にする
 - E2E専用match patternはPR本文に明記する
 - Chrome Web Store提出用ZIPはE2E専用buildから作らない
 
@@ -81,10 +82,11 @@ const context = await chromium.launchPersistentContext(userDataDir, {
 
 ### 自動化する
 
-- ローカル模擬ページでのpaste検知
-- `textarea` と `contenteditable` の挿入挙動
-- 送信ボタンclickの送信前確認
+- ローカル模擬composerページでのpaste検知
+- `textarea`、`contenteditable`、Lexical風DOM、ProseMirror風DOMの挿入挙動
+- 送信ボタンクリックの送信前確認
 - Enter / Cmd+Enter / Ctrl+Enterの送信前確認
+- Shift+Enter / Alt+Enter / IME変換中Enterを送信扱いにしないこと
 - ルールベース検出結果のモーダル表示
 - 日本語placeholderによる安全化結果
 - input eventが発火し、React系UIが変更を認識しやすいこと
@@ -95,7 +97,7 @@ const context = await chromium.launchPersistentContext(userDataDir, {
 - ChatGPT / Claude / Gemini / Perplexityへのログイン
 - 実サイトの本番DOMに依存した完全E2E
 - WebLLM実モデルロード
-- 実APIキー、実トークン、実個人情報を使うテスト
+- 実APIキー、実トークン、実在個人情報を使うテスト
 - Chrome Web Store審査画面の操作
 
 ## 実サイト手動QAとの役割分担
@@ -117,23 +119,23 @@ pnpm build:extension:e2e
 pnpm test:extension:e2e
 ```
 
-- `pnpm build:extension:e2e` は `EXTENSION_E2E=1` を付けて、E2E専用buildを `apps/extension/.output-e2e/chrome-mv3` に作成します。
-- `pnpm test:extension:e2e` はE2E専用buildを作成したうえで、Playwrightでローカルの模擬composerページを開きます。
-- `apps/extension/e2e/mock-composer.html` は `textarea`、`contenteditable`、送信ボタンを持つ最小ページです。
-- `apps/extension/e2e/extension.spec.ts` で、paste検知、安全化して貼り付け、安全化して送信を確認します。
-- Chrome Web Store提出用ZIPはE2E専用buildから作らないでください。通常の `pnpm package:extension` は `apps/extension/.output/chrome-mv3` を使います。
+- `pnpm build:extension:e2e` は `EXTENSION_E2E=1` を付けて、E2E専用buildを `apps/extension/.output-e2e/chrome-mv3` に作成します
+- `pnpm test:extension:e2e` はE2E専用buildを作成したうえで、Playwrightでローカルの模擬composerページを開きます
+- `apps/extension/e2e/mock-composer.html` は `textarea`、`contenteditable`、Lexical風DOM、ProseMirror風DOM、送信ボタンを持つページです
+- `apps/extension/e2e/extension.spec.ts` で、paste検知、安全化して貼り付け、安全化して送信、キーボード送信を確認します
+- Chrome Web Store提出用ZIPはE2E専用buildから作らないでください。通常の `pnpm package:extension` は `apps/extension/.output/chrome-mv3` を使います
 
 ## CI判断
 
-0.1.1時点では、拡張E2Eハーネス本体はCI必須にしません。
+0.1.1時点では、拡張E2Eハーネス本体をCI必須にはしません。
 
 理由:
 
 - リリース用manifestへテスト専用host permissionを混入させない設計が先に必要
 - GitHub Actions上のheaded ChromiumとMV3拡張読み込みの安定性を検証する必要がある
-- WebLLM実モデルロードをCI必須にすると、GPU/保存領域/ネットワークに依存して不安定になる
+- WebLLM実モデルロードをCI必須にすると、GPU、保存領域、ネットワークに依存して不安定になりやすい
 
-ただし、方針ドキュメント、E2E実装ファイルの存在確認、リリースmanifest QAはCIで維持します。将来、headed ChromiumでのMV3拡張読み込みがCI上で安定することを確認できた段階で、`pnpm test:extension:e2e` をCIへ追加します。
+ただし、方針ドキュメント、E2E実装ファイルの存在確認、リリースmanifest QAはCIで維持します。将来、headed ChromiumでのMV3拡張読み込みが安定することを確認できた段階で、`pnpm test:extension:e2e` をCIへ追加します。
 
 ## 最小シナリオ
 
@@ -141,16 +143,15 @@ pnpm test:extension:e2e
 2. Playwrightでローカル模擬composerを起動する
 3. ダミー文をpasteする
 4. 確認モーダルが表示される
-5. `安全化して貼り付け` を押す
+5. `安全化して入力` を押す
 6. 入力欄に日本語placeholderの安全化結果が入る
-7. 送信ボタンを押す
-8. high / critical / 秘密情報保護対象が残っていない場合だけ送信が進む
+7. 送信ボタンまたはEnter送信を試す
+8. `安全化して送信` 後、high / critical / 秘密情報保護対象が残っていない場合だけ送信が進む
 
 ダミー文以外は使いません。
 
 ## 後続拡張候補
 
-- textarea / contenteditable以外に、LexicalやProseMirror風の最小DOMを追加する
-- キーボード送信のE2Eケースを増やす
 - CIでheaded Chromium相当の実行が安定するか検証する
 - 実サイト手動QAの結果とE2Eケースの対応表を増やす
+- Perplexityを0.1.1以降のadapter継続検証対象として扱う

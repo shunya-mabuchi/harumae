@@ -1,6 +1,6 @@
 # SiteAdapter契約とE2E確認項目
 
-最終更新日: 2026-06-23
+最終更新日: 2026-06-24
 
 この文書は、AIまえチェックのChrome拡張で ChatGPT / Claude / Gemini / Perplexity を継続的に保守するためのSiteAdapter契約と、サイト別確認項目を定義します。
 
@@ -80,6 +80,22 @@ SiteAdapterが行わないこと:
 6. ユーザーがマスク・安全化を選んだ場合、`insertTextAtTarget` でカーソル位置または選択範囲へ挿入する
 
 現時点では、paste時の入力欄検出はサイト別adapterではなく共通処理です。将来、対象サイトごとにpaste時の挿入挙動を分ける場合も、DLP判定は共通に残し、DOM固有処理だけをadapterへ寄せます。
+
+## 0.1.1のローカルE2Eカバレッジ
+
+`apps/extension/e2e/mock-composer.html` は、実サイトの完全再現ではなく、SiteAdapterが壊しやすい最小DOM差分を検証するためのページです。
+
+現在の自動E2Eで確認するもの:
+
+- `textarea` へのpasteと安全化して貼り付け
+- `contenteditable` へのpasteと安全化して貼り付け
+- Lexical風の `data-lexical-editor="true"` editorへのpaste
+- ProseMirror風の `.ProseMirror` editorへのpaste
+- 送信ボタンクリック時の送信前確認
+- 通常Enter、Ctrl+Enter、Meta+Enter時の送信前確認
+- Shift+Enter、Alt+Enter、IME変換中Enterを送信扱いにしないこと
+
+このE2Eはログインや実サイトDOMに依存しません。実サイトの送信ボタン位置、Reactイベント反映、A/Bテスト差分は [extension-site-qa.md](./extension-site-qa.md) で手動QAとして確認します。
 
 ## contenteditable / textarea / Reactイベント方針
 
@@ -200,6 +216,20 @@ adapter観点:
 - Enter送信、送信ボタン押下
 - 安全化後にPerplexityの入力欄が置換され、送信内容へ反映される
 - Perplexity側のUI変更で検索モードや添付ボタンが近くにある場合、実際の送信ボタンだけを押す
+
+## ファイル添付イベントの扱い
+
+0.1.xでは、テキスト系ファイルの `input[type=file]` 経由の添付前チェックだけをMVP対象にします。
+
+対象サイト独自のドラッグ&ドロップ添付や、クリップボード経由のファイル添付は、サイトごとのDOMとイベント経路への依存が大きいため動作保証の対象外です。対応する場合は、SiteAdapterごとに次を調査します。
+
+- `input[type=file]` へ集約されるか
+- `drop` / `dragover` / `paste` のどのイベントでファイルが見えるか
+- 添付前に安全化版ファイルへ置き換えられるか
+- 置き換えられない場合、添付をキャンセルしてユーザーに案内できるか
+- サイトの本来の添付UI、アクセシビリティ、ショートカットを壊さないか
+
+将来対応する場合も、`<all_urls>` を無条件に要求しません。対象サイトと目的を限定し、本文、ファイル本文、検出結果、placeholderMap、現在URLをログや診断情報に含めない方針を維持します。
 
 ## 新しいSiteAdapter追加手順
 
