@@ -3,15 +3,14 @@ import type { DetectorRule } from "@ai-mae-check/core";
 import { adapterForHostname } from "../src/content/adapters";
 import {
   createContentGuardContext,
-  createPasteReviewPlan,
   createSendReviewRequest,
   type ContentReviewRequest,
   isContentSiteEnabled,
   type PasteReviewRequest
 } from "../src/content/contentReview";
 import { installFileInterceptor } from "../src/content/dom/fileInterceptor";
+import { installPasteInterceptor, type PasteReviewDecision } from "../src/content/dom/pasteInterceptor";
 import { installSendInterceptor, type SendReviewDecision } from "../src/content/dom/sendInterceptor";
-import { captureCurrentRange, findEditableTarget, insertTextAtTarget } from "../src/lib/dom";
 import { DEFAULT_SETTINGS, loadSettings, normalizeSettings, SETTINGS_KEY, type AiMaeCheckSettings } from "../src/lib/settings";
 import { loadVerifiedRemoteRules } from "../src/lib/remoteRuleDelivery";
 import { targetMatches } from "../src/lib/sites";
@@ -55,17 +54,11 @@ export default defineContentScript({
         remoteRules
       });
 
-    document.addEventListener(
-      "paste",
-      (event) => {
-        void handlePaste(event, {
-          isEnabled,
-          getGuardContext,
-          launchReview: (request) => launchPasteReview(request, settings)
-        });
-      },
-      true
-    );
+    installPasteInterceptor({
+      isEnabled,
+      getGuardContext,
+      review: (request) => launchPasteReview(request, settings)
+    });
 
     installFileInterceptor({
       isEnabled,
@@ -83,46 +76,10 @@ export default defineContentScript({
   }
 });
 
-interface PasteHandlerOptions {
-  isEnabled: () => boolean;
-  getGuardContext: () => ReturnType<typeof createContentGuardContext>;
-  launchReview: (request: PasteReviewRequest) => Promise<Awaited<ReturnType<typeof showPasteReviewModal>>>;
-}
-
-async function handlePaste(event: ClipboardEvent, options: PasteHandlerOptions): Promise<void> {
-  if (!options.isEnabled()) {
-    return;
-  }
-
-  const target = findEditableTarget(event.target);
-  if (!target) {
-    return;
-  }
-
-  const pastedText = event.clipboardData?.getData("text/plain") ?? "";
-  if (pastedText.length === 0) {
-    return;
-  }
-
-  const plan = createPasteReviewPlan(pastedText, options.getGuardContext());
-  if (plan.type === "allow") {
-    return;
-  }
-
-  event.preventDefault();
-  event.stopPropagation();
-  const savedRange = captureCurrentRange(target);
-  const decision = await options.launchReview(plan.request);
-
-  if (decision.type === "insert") {
-    insertTextAtTarget(target, decision.text, savedRange);
-  }
-}
-
 async function launchPasteReview(
   request: PasteReviewRequest,
   settings: AiMaeCheckSettings
-): Promise<Awaited<ReturnType<typeof showPasteReviewModal>>> {
+): Promise<PasteReviewDecision> {
   return showPasteReviewModal({
     inputText: request.inputText,
     detection: request.detection,
